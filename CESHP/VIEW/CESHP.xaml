@@ -1,0 +1,363 @@
+﻿<UserControl x:Class="CESHP.VIEW.CESHP"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CESHP.VIEW"
+			 xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+			 xmlns:CEBiblioteca="clr-namespace:CEBiblioteca;assembly=CEBiblioteca"
+			 xmlns:DragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=CEBiblioteca"
+             mc:Ignorable="d"
+			 MinHeight="800"
+			 MinWidth="1200"
+			 IsEnabled="{Binding Path=shp.IsEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+			 >
+	<UserControl.Resources>
+		<Style TargetType="{x:Type ScrollViewer}">
+			<Style.Setters>
+				<Setter Property="CEBiblioteca:ScrollViewerCorrector.FixScrolling" Value="True" />
+			</Style.Setters>
+		</Style>
+	</UserControl.Resources>
+
+	<Border>
+		<Grid Margin="5,5,5,5">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="4*" MinWidth="650"/>
+				<ColumnDefinition Width="5" />
+				<ColumnDefinition Width="1*" MinWidth="200"/>
+			</Grid.ColumnDefinitions>
+
+			<Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" BorderBrush="Black" BorderThickness="1" >
+				<!-- NovoArquivoCommand -->
+				<MenuItem Header="Novo" Command="{Binding Path=NovoArquivoCommand}" VerticalContentAlignment="Stretch" Height="30">
+					<MenuItem.Icon>
+						<Rectangle>
+							<Rectangle.Fill>
+								<VisualBrush Visual="{StaticResource NewFile_16x}" />
+							</Rectangle.Fill>
+						</Rectangle>
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- AbrirArquivoCommand -->
+				<MenuItem Header="Abrir" Command="{Binding Path=AbrirArquivoCommand}" VerticalContentAlignment="Stretch" Height="30">
+					<MenuItem.Icon>
+						<Rectangle>
+							<Rectangle.Fill>
+								<VisualBrush Visual="{StaticResource OpenFolder_256x}" />
+							</Rectangle.Fill>
+						</Rectangle>
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- SalvarArquivoCommand -->
+				<MenuItem Header="Salvar" Command="{Binding Path=SalvarArquivoCommand}" VerticalContentAlignment="Stretch">
+					<MenuItem.Icon>
+						<Rectangle>
+							<Rectangle.Fill>
+								<VisualBrush Visual="{StaticResource Save_256x}" />
+							</Rectangle.Fill>
+						</Rectangle>
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- SalvarComoCommand -->
+				<MenuItem Header="Salvar Como..." Command="{Binding Path=SalvarComoCommand}" VerticalContentAlignment="Stretch">
+					<MenuItem.Icon>
+						<Rectangle>
+							<Rectangle.Fill>
+								<VisualBrush Visual="{StaticResource SaveAs_16x}" />
+							</Rectangle.Fill>
+						</Rectangle>
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- DuplicarCommand -->
+				<MenuItem Header="Duplicar" Command="{Binding Path=DuplicarCommand}" VerticalContentAlignment="Stretch">
+					<MenuItem.Icon>
+						<Rectangle>
+							<Rectangle.Fill>
+								<VisualBrush Visual="{StaticResource Copy_32x}"/>
+							</Rectangle.Fill>
+						</Rectangle>
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- CalcularCommand -->
+				<MenuItem Header="Calcular" Command="{Binding Path=CalcularCommand}" VerticalContentAlignment="Stretch">
+					<MenuItem.Icon>
+						<Rectangle>
+							<Rectangle.Fill>
+								<VisualBrush Visual="{StaticResource Calculator_32xLG}" />
+							</Rectangle.Fill>
+						</Rectangle>
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- ImprimirCommand -->
+				<MenuItem Header="Imprimir" Command="{Binding Path=ImprimirCommand}" VerticalContentAlignment="Stretch">
+					<MenuItem.Icon>
+						<Rectangle>
+							<Rectangle.Fill>
+								<VisualBrush Visual="{StaticResource FileEncodingDialog_256x}" />
+							</Rectangle.Fill>
+						</Rectangle>
+					</MenuItem.Icon>
+				</MenuItem>
+			</Menu>
+
+			<Menu Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" BorderBrush="Black" BorderThickness="1" >
+				<!-- Jato -->
+				<MenuItem>
+					<MenuItem.Header>
+						<StackPanel Orientation="Horizontal">
+							<Label Content="Jato:"/>
+							<ComboBox
+								Width="100"
+								VerticalAlignment="Center"
+								ItemsSource="{Binding Path=DataContext.jatos, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+								SelectedValue="{Binding Path=shp.jato, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							/>
+						</StackPanel>
+					</MenuItem.Header>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- Vazão -->
+				<MenuItem>
+					<MenuItem.Header>
+						<StackPanel Orientation="Horizontal">
+							<Label Content="Vazão:"/>
+							<TextBox Text="{Binding Path=shp.vazao_minima, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N2}" Width="50" VerticalAlignment="Center" />
+						</StackPanel>
+					</MenuItem.Header>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- Vazão -->
+				<MenuItem>
+					<MenuItem.Header>
+						<StackPanel Orientation="Horizontal">
+							<Label Content="Pressão:"/>
+							<TextBox Text="{Binding Path=shp.pressao_minima, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N2}" Width="40" VerticalAlignment="Center" />
+						</StackPanel>
+					</MenuItem.Header>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- Requinte ou k-->
+				<MenuItem Visibility="{Binding Path=shp.show_requinte, Mode=OneWay, UpdateSourceTrigger=PropertyChanged }">
+					<MenuItem.Header>
+						<StackPanel Orientation="Horizontal">
+							<Label Content="Requinte:"/>
+							<TextBox Text="{Binding Path=shp.requinte, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N2}" Width="40" VerticalAlignment="Center" />
+						</StackPanel>
+					</MenuItem.Header>
+				</MenuItem>
+				<MenuItem Visibility="{Binding Path=shp.show_k, Mode=OneWay, UpdateSourceTrigger=PropertyChanged }">
+					<MenuItem.Header>
+						<StackPanel Orientation="Horizontal">
+							<Label Content="K:"/>
+							<TextBox Text="{Binding Path=shp.k, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N2}" Width="40" VerticalAlignment="Center" />
+						</StackPanel>
+					</MenuItem.Header>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- Nº Hidrantes -->
+				<MenuItem>
+					<MenuItem.Header>
+						<StackPanel Orientation="Horizontal">
+							<Label Content="Nº Hidrantes:"/>
+							<TextBox Text="{Binding Path=shp.numero_hidrantes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N0}" Width="30" VerticalAlignment="Center" />
+						</StackPanel>
+					</MenuItem.Header>
+				</MenuItem>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- AdicionarTrechoCommand -->
+				<MenuItem Header="Adicionar Trecho" Command="{Binding Path=AdicionarTrechoCommand}" VerticalContentAlignment="Stretch" />
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- AplicarCommand -->
+				<MenuItem Header="Aplicar..." Command="{Binding Path=AplicarCommand}" VerticalContentAlignment="Stretch" />
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- MudarCommand -->
+				<MenuItem Header="Mudar..." Command="{Binding Path=MudarCommand}" VerticalContentAlignment="Stretch" />
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<!-- ResetCommand -->
+				<MenuItem Header="Reset" Command="{Binding Path=ResetCommand}" VerticalContentAlignment="Stretch" />
+			</Menu>
+
+			<DockPanel Grid.Row="2" Grid.Column="0">
+				<DataGrid
+					AutoGenerateColumns="False"
+					CanUserResizeColumns="False"
+					CanUserResizeRows="False"
+					RowHeaderWidth="0"
+					GridLinesVisibility="None"
+					SelectionMode="Single"
+					IsReadOnly="True"
+					IsEnabled="True"
+					SelectionUnit="FullRow"
+					DataContext="{Binding}"
+					ItemsSource="{Binding Path=shp.trechos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+					SelectedItem="{Binding Path=shp.trechosSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					IsSynchronizedWithCurrentItem="true"
+					AllowDrop="True"
+					DragDrop:DragDrop.IsDragSource="True"
+					DragDrop:DragDrop.IsDropTarget="True"
+					DragDrop:DragDrop.DropHandler="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+					DragDrop:DragDrop.DropScrollingMode="VerticalOnly"
+					AlternationCount="2"
+					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+					ScrollViewer.VerticalScrollBarVisibility="Auto"
+				>
+					<DataGrid.Resources>
+						<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
+					</DataGrid.Resources>
+					<DataGrid.RowStyle>
+						<Style TargetType="{x:Type DataGridRow}">
+							<Setter Property="Margin" Value="0,2,0,2"/>
+							<Setter Property="BorderThickness" Value="1"/>
+							<Setter Property="BorderBrush" Value="Black"/>
+							<Style.Triggers>
+								<Trigger Property="AlternationIndex" Value="0">
+									<Setter Property="Background" Value="White" />
+								</Trigger>
+								<Trigger Property="AlternationIndex" Value="1">
+									<Setter Property="Background" Value="WhiteSmoke" />
+								</Trigger>
+								<Trigger Property="IsMouseOver" Value="True">
+									<Setter Property="Background" Value="Khaki" />
+								</Trigger>
+							</Style.Triggers>
+						</Style>
+					</DataGrid.RowStyle>
+					<DataGrid.Columns>
+						<DataGridTemplateColumn Header="Trecho" Width="140">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+										<ComboBox Width="60" VerticalAlignment="Center"
+													ItemsSource="{Binding Path=DataContext.shp.pontosPontosOnly, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+													DisplayMemberPath="nome"
+													SelectedValue="{Binding Path=inicio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+												/>
+										<Label Content="-"/>
+										<ComboBox Width="60" VerticalAlignment="Center"
+												ItemsSource="{Binding Path=DataContext.shp.pontos, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+												DisplayMemberPath="nome"
+												SelectedValue="{Binding Path=fim, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+											/>
+									</StackPanel>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+						<DataGridTemplateColumn Header="Material" Width="130">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<ComboBox Width="120" VerticalAlignment="Center"
+											ItemsSource="{Binding Path=DataContext.materiais, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+											DisplayMemberPath="nome"
+											SelectedIndex="{Binding Path=material_index, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+											/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+
+						<DataGridTemplateColumn Header="&#8960;" Width="60">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<ComboBox Width="50" VerticalAlignment="Center"
+											ItemsSource="{Binding Path=material.diametros, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+											DisplayMemberPath="diametro_nominal"
+											SelectedIndex="{Binding Path=diametro_index, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+											/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+						<DataGridTemplateColumn Header="Comp." Width="60">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBox Width="50" Text="{Binding Path=comprimento, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N2, Delay=500}" VerticalAlignment="Center"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+
+						<DataGridTemplateColumn Header="Desn." Width="60">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBox Width="50" Text="{Binding Path=desnivel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N2, Delay=500}" VerticalAlignment="Center"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+
+						<DataGridTemplateColumn Header="Peças." Width="40">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Button VerticalAlignment="Center" HorizontalAlignment="Center" Command="{Binding DataContext.EditarPecasCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}">
+										<Rectangle Height="20" Width="20">
+											<Rectangle.Fill>
+												<VisualBrush Visual="{StaticResource Add_16x}" />
+											</Rectangle.Fill>
+										</Rectangle>
+									</Button>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+
+						<DataGridTemplateColumn Header="Del." Width="40">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Button VerticalAlignment="Center" HorizontalAlignment="Center" >
+										<Rectangle Height="20" Width="20">
+											<Rectangle.Fill>
+												<VisualBrush Visual="{StaticResource Cancel_32x}" />
+											</Rectangle.Fill>
+										</Rectangle>
+									</Button>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+
+						<DataGridTemplateColumn Header="Mang." Width="60">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<ComboBox Width="50" SelectedIndex="0" VerticalAlignment="Center" Visibility="{Binding Path=show_hidrante, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+										<ComboBoxItem>60</ComboBoxItem>
+									</ComboBox>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+
+						<DataGridTemplateColumn Header="Desn." Width="*" >
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBox Width="50" Text="-99,99" VerticalAlignment="Center" HorizontalAlignment="Left" Visibility="{Binding Path=show_hidrante, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+
+				</DataGrid>
+			</DockPanel>
+
+			<GridSplitter Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+			<DockPanel Grid.Row="2" Grid.Column="2">
+				<ScrollViewer  ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+				</ScrollViewer>
+			</DockPanel>
+		</Grid>
+	</Border>
+</UserControl>

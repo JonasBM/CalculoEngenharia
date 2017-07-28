@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="CalculoEngenharia.VIEW.Inicio"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CalculoEngenharia.VIEW"
+             mc:Ignorable="d"
+			 MinHeight="400"
+			 MinWidth="400"
+			 >
+	<Border BorderThickness="1" BorderBrush="Black">
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="1*"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="1*"/>
+				<ColumnDefinition Width="1*"/>
+			</Grid.ColumnDefinitions>
+			<StackPanel Grid.Row="0" Grid.Column="0" Margin="10">
+				<Button Height="40" Width="150" Command="{Binding Path=NovoSHPCommand}">
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+						<Rectangle Height="30" Width="30">
+							<Rectangle.Fill>
+								<VisualBrush Visual="{StaticResource NewFile_16x}" />
+							</Rectangle.Fill>
+						</Rectangle>
+						<StackPanel Margin="10,2,2,2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+							<TextBlock VerticalAlignment="Center">Calculo SHP</TextBlock>
+							<TextBlock VerticalAlignment="Center" FontSize="8">Novo Documento</TextBlock>
+						</StackPanel>
+					</StackPanel>
+				</Button>
+			</StackPanel>
+		</Grid>
+	</Border>
+</UserControl>

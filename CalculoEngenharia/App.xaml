@@ -1,0 +1,13 @@
+﻿<Application x:Class="CalculoEngenharia.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:CalculoEngenharia"
+			 xmlns:teste="clr-namespace:CEBiblioteca;assembly=CEBiblioteca">
+	<Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/CEBiblioteca;component/icons.xaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Application.Resources>
+</Application>

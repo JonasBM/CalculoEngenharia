@@ -178,9 +178,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public bool canSalva()
 		{
-			if (
-				true
-			)
+			if (true)
 			{
 				return true;
 			}

@@ -261,13 +261,10 @@ namespace GongSolutions.Wpf.DragDrop
 		
 		private static void Scroll(DropInfo dropInfo, DragEventArgs e)
 		{
-			
-			Console.WriteLine(dropInfo.VisualTarget);
 			if (dropInfo == null || dropInfo.TargetScrollViewer == null)
 			{
 				return;
 			}
-
 			var scrollViewer = dropInfo.TargetScrollViewer;
 			var scrollContentPresenter = scrollViewer.GetVisualDescendent<ScrollContentPresenter>();
 			var scrollingMode = dropInfo.TargetScrollingMode;
@@ -286,7 +283,6 @@ namespace GongSolutions.Wpf.DragDrop
 					scrollViewer.LineLeft();
 				}
 			}
-
 			if (scrollingMode == ScrollingMode.Both || scrollingMode == ScrollingMode.VerticalOnly)
 			{
 				if (position.Y >= scrollContentPresenter.ActualHeight - scrollMargin && scrollContentPresenter.VerticalOffset <= scrollContentPresenter.ExtentHeight - scrollContentPresenter.ViewportHeight)

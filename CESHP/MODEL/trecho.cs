@@ -36,7 +36,6 @@ namespace CESHP.MODEL
 		public string nome { get { return inicio.nome + "-" + fim.nome; } }
 
 		private shp _shpParent;
-		[Description("diametro em mm")]
 		public shp shpParent { get { return _shpParent; } set { _shpParent = value; OnPropertyChanged(); } }
 
 		private ponto _inicio;
@@ -67,6 +66,26 @@ namespace CESHP.MODEL
 				}
 			}
 		}
+		public bool isHidrante
+		{
+			get
+			{
+
+				if (fim != null)
+				{
+					if (fim is hidrante)
+					{
+						return true;
+					}
+				}
+				return false;
+
+			}
+			set
+			{
+				Console.WriteLine("isHidrante change");
+			}
+		}
 
 		private ponto _fim;
 		[Description("ponto final do trecho")]
@@ -85,6 +104,7 @@ namespace CESHP.MODEL
 				}
 				_fim = value;
 				OnPropertyChanged();
+				OnPropertyChanged("isHidrante");
 				OnPropertyChanged("show_hidrante");
 			}
 		}
@@ -194,7 +214,6 @@ namespace CESHP.MODEL
 			material_index = 0;
 			diametro_index = data.materiais[material_index].diametro_minimo_index;
 			vazao = 0;
-
 		}
 
 		public bool Equals(trecho other)

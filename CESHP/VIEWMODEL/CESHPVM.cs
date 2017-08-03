@@ -454,37 +454,56 @@ namespace CESHP.VIEWMODEL
 		#endregion
 
 		#region DragNDrop
+
+		//bool dragStarted = false;
+		//int oldIndexStarted = 0;
 		public void DragOver(IDropInfo dropInfo)
 		{
+			
 			//Debug.WriteLine("CESHPVM, DragOver");
 			if (dropInfo.Data != null && dropInfo.TargetItem != null && dropInfo.Data is trecho && dropInfo.TargetItem is trecho)
 			{
 				dropInfo.DropTargetAdorner = null;
 				dropInfo.Effects = DragDropEffects.Move;
 
-				trecho sourceItem = dropInfo.Data as trecho;
-				trecho targetItem = dropInfo.TargetItem as trecho;
-				int oldIndex = shp.trechos.IndexOf(sourceItem);
-				int newIndex = shp.trechos.IndexOf(targetItem);
-				//Debug.WriteLine("oldIndex, newIndex: {0} to {1}", oldIndex, newIndex);
-				if (sourceItem.fim != null)
-				{
-					if (sourceItem.fim.tipo == tipos_de_ponto.Hidrante && newIndex == 0) { newIndex = 1; }
-					if (oldIndex != newIndex)
-					{
-						shp.trechos.Move(oldIndex, newIndex);
-						shp.trechosSelected = sourceItem;
-					}
-				}
+				//trecho sourceItem = dropInfo.Data as trecho;
+				//trecho targetItem = dropInfo.TargetItem as trecho;
 
+				shp.moveTrechos(dropInfo.Data as trecho, dropInfo.TargetItem as trecho);
+
+				//int oldIndex = shp.trechos.IndexOf(sourceItem);
+				//int newIndex = shp.trechos.IndexOf(targetItem);
+
+
+
+				//Debug.WriteLine("oldIndex, newIndex: {0} to {1}", oldIndex, newIndex);
+				//if (!dragStarted)
+				//{
+					//oldIndexStarted = oldIndex;
+					//dragStarted = true;
+				//}
+				
+				
 			}
 		}
 		public void Drop(IDropInfo dropInfo)
 		{
 			Debug.WriteLine("CESHPVM, Drop");
-			shp.IsEnabled = false;
-			shp.OrganizaLetras();
-			shp.IsEnabled = true;
+			//shp.IsEnabled = false;
+			if (dropInfo.Data != null && dropInfo.TargetItem != null && dropInfo.Data is trecho && dropInfo.TargetItem is trecho)
+			{
+				dropInfo.DropTargetAdorner = null;
+				dropInfo.Effects = DragDropEffects.Move;
+
+				//trecho sourceItem = dropInfo.Data as trecho;
+				//trecho targetItem = dropInfo.TargetItem as trecho;
+
+				//shp.OrganizaLetras(sourceItem, oldIndexStarted);
+			}
+			//shp.IsEnabled = true;
+
+			//dragStarted = false;
+			//oldIndexStarted = 0;
 		}
 		#endregion
 	}

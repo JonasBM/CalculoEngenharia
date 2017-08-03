@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CESHP.MODEL
@@ -15,18 +16,18 @@ namespace CESHP.MODEL
 	[Serializable]
 	public class ponto : baseModel //, IEquatable<ponto>
 	{
-
 		public ponto()
 		{
 			Debug.WriteLine("ponto, ponto");
 			tipo = tipos_de_ponto.Ponto;
 		}
 
-		public ponto(string __nome)
+		public ponto(string __nome, shp __shpParent, tipos_de_ponto __tipo = tipos_de_ponto.Ponto)
 		{
-			Debug.WriteLine("ponto, ponto(nome)");
+			Debug.WriteLine("ponto, ponto(nome,tipo)");
+			shpParent = __shpParent;
 			nome = __nome;
-			tipo = tipos_de_ponto.Ponto;
+			tipo = __tipo;
 		}
 
 
@@ -37,6 +38,9 @@ namespace CESHP.MODEL
 		private string _nome;
 		[Description("nome do ponto")]
 		public string nome { get { return _nome; } set { _nome = value; OnPropertyChanged(); } }
+
+		private shp _shpParent;
+		public shp shpParent { get { return _shpParent; } set { _shpParent = value; OnPropertyChanged(); } }
 
 		private tipos_de_ponto _tipo;
 		[Description("tipo de ponto (Ponto, Bomba, Hidrante, Esguicho, Redutor_de_Pressao)")]
@@ -126,72 +130,77 @@ namespace CESHP.MODEL
 			}
 			return false;
 		}
-
-		public static ponto ProximoHidrante(ObservableCollection<ponto> __pontos, ponto __atual)
-		{
-			//__pontos.Where.FirstOrDefault();
-			return null;
-		}
 	}
 
 	[Serializable]
 	public class nulo : ponto
 	{
-		public nulo()
-		{
-			nome = "--";
-			tipo = tipos_de_ponto.Nulo;
-		}
+		public nulo(shp __shpParent) : base("--", __shpParent, tipos_de_ponto.Nulo) { Debug.WriteLine("nulo, nulo"); }
 	}
 
 	[Serializable]
 	public class bomba : ponto
 	{
-		public bomba()
-		{
-			tipo = tipos_de_ponto.Bomba;
-		}
+		public bomba(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Bomba) { Debug.WriteLine("bomba, bomba"); }
 	}
 
 	[Serializable]
 	public class hidrante : ponto
 	{
-		public hidrante(string __nome)
+		public hidrante(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Hidrante) { Debug.WriteLine("hidrante, hidrante"); }
+		public hidrante proximo(bool __novo = true)
 		{
-			nome = __nome;
-			tipo = tipos_de_ponto.Hidrante;
+			Debug.WriteLine("hidrante, proximo");
+			string stringNumero = Regex.Replace(nome, @"[^0-9]", "");
+			int numero = int.Parse(stringNumero);
+			hidrante proximoHidrante = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && p.nome == shp.letraHidrante + (numero + 1)).FirstOrDefault() as hidrante;
+			if (__novo && proximoHidrante == null)
+			{
+				return novo(shpParent);
+			}
+			else
+			{
+				return proximoHidrante;
+			}
+		}
+		public static hidrante novo(shp __shpParent)
+		{
+			Debug.WriteLine("hidrante, novo");
+			hidrante ultimoHidrante = __shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante).LastOrDefault() as hidrante;
+			string stringNumero = Regex.Replace(ultimoHidrante.nome, @"[^0-9]", "");
+			int numero = int.Parse(stringNumero);
+			return new hidrante(shp.letraHidrante + (numero + 1), __shpParent);
+		}
+		public int numero()
+		{
+			string stringNumero = Regex.Replace(nome, @"[^0-9]", "");
+			return int.Parse(stringNumero);
 		}
 	}
 
 	[Serializable]
 	public class esguicho : ponto
 	{
-		public esguicho()
-		{
-			tipo = tipos_de_ponto.Esguicho;
-		}
+		public esguicho(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Esguicho) { Debug.WriteLine("esguicho, esguicho"); }
 	}
 
 	[Serializable]
-	public class redutor : esguicho
+	public class redutor : ponto
 	{
-		public redutor()
-		{
-			tipo = tipos_de_ponto.Redutor_de_Pressao;
-		}
+		public redutor(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Redutor_de_Pressao) { Debug.WriteLine("redutor, redutor"); }
 	}
 
 	[Serializable]
 	public class reservatorio : ponto
 	{
-		public reservatorio()
+		public reservatorio(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Reservatorio)
 		{
+			Debug.WriteLine("reservatorio, reservatorio");
 			index = 0;
-			nome = "Res.";
 			pressao = 0;
 			vazao_criada = 0;
-			tipo = tipos_de_ponto.Reservatorio;
 			vazao_acumulada = 0;
+
 		}
 	}
 }

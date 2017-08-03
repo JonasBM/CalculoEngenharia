@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -63,6 +64,16 @@ namespace CESHP.MODEL
 
 		private bool _IsEnabled = true;
 		public bool IsEnabled { get { return _IsEnabled; } set { _IsEnabled = value; OnPropertyChanged(); } }
+
+		public int minWidthPonto
+		{
+			get
+			{
+				return pontos.Max(p => p.nome.Length) * 6 + 25;
+			}
+		}
+
+		public static string letraHidrante = "H";
 
 		#region DADOS
 		private string _obra;
@@ -128,6 +139,13 @@ namespace CESHP.MODEL
 			}
 		}
 
+		public IEnumerable<ponto> pontosHidrantesOnly
+		{
+			get
+			{
+				return _pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante);
+			}
+		}
 
 		public shp()
 		{
@@ -165,17 +183,17 @@ namespace CESHP.MODEL
 			trecho trecho1;
 			trecho trecho2;
 
-			ponto1 = new nulo();
+			ponto1 = new nulo(this);
 			pontos.Add(ponto1);
 			ponto1.index = pontos.IndexOf(ponto1);
 
-			ponto1 = new reservatorio();
+			ponto1 = new reservatorio("Res.", this);
 			pontos.Add(ponto1);
 			ponto1.index = pontos.IndexOf(ponto1);
 
 			for (int i = 0; i < __numero_hidrantes; i++)
 			{
-				ponto2 = new ponto(data.alfabeto.GetLetra(i));
+				ponto2 = new ponto(data.alfabeto.GetLetra(i), this);
 				pontos.Add(ponto2);
 				ponto2.index = pontos.IndexOf(ponto2);
 
@@ -183,7 +201,7 @@ namespace CESHP.MODEL
 				trechos.Add(trecho1);
 				trecho1.index = trechos.IndexOf(trecho1);
 
-				ponto3 = new hidrante("H" + (i + 1));
+				ponto3 = new hidrante(letraHidrante + (i + 1), this);
 				pontos.Add(ponto3);
 				ponto3.index = pontos.IndexOf(ponto3);
 
@@ -194,11 +212,11 @@ namespace CESHP.MODEL
 				ponto1 = ponto2;
 			}
 
-			ponto1 = new ponto(data.alfabeto.GetLetra(__numero_hidrantes));
+			ponto1 = new ponto(data.alfabeto.GetLetra(__numero_hidrantes), this);
 			pontos.Add(ponto1);
 			ponto1.index = pontos.IndexOf(ponto1);
 
-			ponto1 = new hidrante("H" + (__numero_hidrantes + 1));
+			ponto1 = new hidrante(letraHidrante + (__numero_hidrantes + 1), this);
 			pontos.Add(ponto1);
 			ponto1.index = pontos.IndexOf(ponto1);
 
@@ -220,49 +238,178 @@ namespace CESHP.MODEL
 			}
 		}
 
-		public void OrganizaLetras()
+
+
+		public void moveTrechos(trecho __sourceTrecho, trecho __targetTrecho)
 		{
-			Debug.WriteLine("shp, OrganizaLetras");
-			//ponto nulo = pontos.Where(p => p.tipo == tipos_de_ponto.Nulo).FirstOrDefault();
-			ponto ultimoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).FirstOrDefault();
-			ponto proximoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).FirstOrDefault();
-			ponto proximoHidrante = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante).FirstOrDefault();
-			for (int i = 0; i < trechos.Count; i++)
+			Debug.WriteLine("shp, moveTrechos(sourceTrecho,targetTrecho)");
+			int oldIndex = trechos.IndexOf(__sourceTrecho);
+			int newIndex = trechos.IndexOf(__targetTrecho);
+			if (__sourceTrecho.fim != null)
 			{
-				if (i == 0)
+				//moveTrechos(trechos.IndexOf(__sourceTrecho), trechos.IndexOf(__targetTrecho));
+				if (__sourceTrecho.fim.tipo == tipos_de_ponto.Hidrante && newIndex == 0) { newIndex = 1; }
+				if (oldIndex != newIndex)
 				{
-					trechos[i].inicio = pontos.Where(p => p.tipo == tipos_de_ponto.Reservatorio).FirstOrDefault();
-					trechos[i].fim = proximoPonto;
-					ultimoPonto = proximoPonto;
-					proximoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto && pontos.IndexOf(p) > pontos.IndexOf(proximoPonto)).FirstOrDefault();
+					moveTrechos(oldIndex, newIndex);
 				}
-				else
+				for (int i = 0; i < trechos.Count; i++)
 				{
-					if (trechos[i].inicio.tipo == tipos_de_ponto.Nulo || trechos[i].fim.tipo == tipos_de_ponto.Nulo)
+					trechos[i].index = i;
+				}
+			}
+			
+		}
+
+		public void moveTrechos(int __oldIndex, int __newIndex)
+		{
+			Debug.WriteLine("shp, moveTrechos(oldIndex,newIndex)");
+			bool sobe = true;
+			trecho trechoModificado = trechos[__newIndex];
+			trecho[] entreTrechoOriginal;
+
+
+			trechos.Move(__oldIndex, __newIndex);
+			trechosSelected = trechos[__newIndex];
+
+			if (__oldIndex > __newIndex)
+			{
+				sobe = true;
+				entreTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) <= __oldIndex && trechos.IndexOf(t) >= __newIndex).ToArray();
+			}
+			else
+			{
+				sobe = false;
+				entreTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) >= __oldIndex && trechos.IndexOf(t) <= __newIndex).ToArray();
+			}
+
+			hidrante ultimoHidrante = trechos.Where(t => t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(entreTrechoOriginal.FirstOrDefault())).FirstOrDefault().fim as hidrante;
+			ponto ultimoPonto = trechos.Where(t => !t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(entreTrechoOriginal.FirstOrDefault())).FirstOrDefault().fim;
+
+			if (!trechoModificado.isHidrante)
+			{
+				for (int i = 0; i < entreTrechoOriginal.Count(); i++)
+				{
+					
+					if (!entreTrechoOriginal[i].isHidrante)
 					{
-						//trechos[i].inicio = nulo;
-						//trechos[i].fim = nulo;
-					}
-					else if(trechos[i].fim.tipo == tipos_de_ponto.Hidrante)
-					{
-						trechos[i].inicio = ultimoPonto;
-						trechos[i].fim = proximoHidrante;
-						proximoHidrante = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(proximoHidrante)).FirstOrDefault();
-					}
-					else if(trechos[i].fim.tipo == tipos_de_ponto.Ponto)
-					{
-						trechos[i].inicio = ultimoPonto;
-						trechos[i].fim = proximoPonto;
-						ultimoPonto = proximoPonto;
-						proximoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto && pontos.IndexOf(p) > pontos.IndexOf(proximoPonto)).FirstOrDefault();
+						entreTrechoOriginal[i].inicio = trechos.Where(t => !t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(entreTrechoOriginal[i])).FirstOrDefault().fim;
+						entreTrechoOriginal[i].fim = ultimoHidrante.proximo();
 					}
 				}
 			}
 		}
 
-		public void OrganizaTrechos()
+		public void OrganizaLetras(trecho __trechoModificado, int __oldIndexStarted)
 		{
 			Debug.WriteLine("shp, OrganizaLetras");
+			bool sobe = true;
+			trecho[] anteriorTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) < trechos.IndexOf(__trechoModificado)).ToArray();
+			trecho[] posteriorTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) > trechos.IndexOf(__trechoModificado)).ToArray();
+			trecho[] entreTrechoOriginal;
+			if (__oldIndexStarted > trechos.IndexOf(__trechoModificado))
+			{
+				sobe = true;
+				entreTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) <= __oldIndexStarted && trechos.IndexOf(t) >= trechos.IndexOf(__trechoModificado)).ToArray();
+			}
+			else
+			{
+				sobe = false;
+				entreTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) >= __oldIndexStarted && trechos.IndexOf(t) <= trechos.IndexOf(__trechoModificado)).ToArray();
+			}
+			hidrante ultimoHidrante = trechos.Where(t => t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(entreTrechoOriginal.FirstOrDefault())).FirstOrDefault().fim as hidrante;
+			ponto ultimoPonto = trechos.Where(t => !t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(entreTrechoOriginal.FirstOrDefault())).FirstOrDefault().fim;
+
+			if (!__trechoModificado.isHidrante)
+			{
+				for (int i = 0; i < entreTrechoOriginal.Count(); i++)
+				{
+					entreTrechoOriginal[i].inicio = ultimoPonto;
+					if (!entreTrechoOriginal[i].isHidrante)
+					{
+						entreTrechoOriginal[i].fim = ultimoHidrante.proximo();
+					}
+				}
+			}
+
+
+			return;
+
+
+
+
+			__trechoModificado.inicio = anteriorTrechoOriginal.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).LastOrDefault().fim;
+
+			//hidrante proximoHidrante = (anteriorTrechoOriginal.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).LastOrDefault().fim as hidrante).proximo();
+			//ponto hidranteAtual = pontos.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).LastOrDefault().fim;
+
+			if (!__trechoModificado.isHidrante)
+			{
+				if (posteriorTrechoOriginal.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).FirstOrDefault() != null)
+				{
+					//__trechoModificado.fim = posteriorTrechoOriginal.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).FirstOrDefault().fim;
+				}
+			}
+			else
+			{
+				//__trechoModificado.fim = posteriorTrechoOriginal.Where(t => t.isHidrante).FirstOrDefault().fim;
+			}
+
+			if (__oldIndexStarted > trechos.IndexOf(__trechoModificado))
+			{
+				for (int i = 0; i < posteriorTrechoOriginal.Count(); i++)
+				{
+					if (trechos.IndexOf(posteriorTrechoOriginal[i]) <= __oldIndexStarted)
+					{
+						if (!__trechoModificado.isHidrante)
+						{
+							posteriorTrechoOriginal[i].inicio = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(posteriorTrechoOriginal[i].inicio)).FirstOrDefault();
+							if (!posteriorTrechoOriginal[i].isHidrante)
+							{
+								posteriorTrechoOriginal[i].fim = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(posteriorTrechoOriginal[i].fim)).FirstOrDefault();
+							}
+						}
+						else
+						{
+							if (posteriorTrechoOriginal[i].fim.tipo == tipos_de_ponto.Hidrante)
+							{
+								posteriorTrechoOriginal[i].fim = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(posteriorTrechoOriginal[i].fim)).FirstOrDefault();
+							}
+						}
+					}
+				}
+			}
+
+			if (__oldIndexStarted < trechos.IndexOf(__trechoModificado))
+			{
+				for (int i = 0; i < anteriorTrechoOriginal.Count(); i++)
+				{
+					if (trechos.IndexOf(anteriorTrechoOriginal[i]) >= __oldIndexStarted)
+					{
+						if (!__trechoModificado.isHidrante)
+						{
+							anteriorTrechoOriginal[i].inicio = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) < pontos.IndexOf(anteriorTrechoOriginal[i].inicio)).LastOrDefault();
+							if (!anteriorTrechoOriginal[i].isHidrante)
+							{
+								anteriorTrechoOriginal[i].fim = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) < pontos.IndexOf(anteriorTrechoOriginal[i].fim)).LastOrDefault();
+							}
+						}
+						else
+						{
+							if (anteriorTrechoOriginal[i].fim.tipo == tipos_de_ponto.Hidrante)
+							{
+								anteriorTrechoOriginal[i].fim = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && pontos.IndexOf(p) < pontos.IndexOf(anteriorTrechoOriginal[i].fim)).LastOrDefault();
+							}
+						}
+					}
+				}
+			}
+
+		}
+
+		public void OrganizaTrechos()
+		{
+			Debug.WriteLine("shp, OrganizaTrechos");
 			int index = 0;
 			int newIndex = 0;
 
@@ -271,7 +418,8 @@ namespace CESHP.MODEL
 
 			for (int i = 0; i < pontos.Count; i++)
 			{
-				if (pontos[i].tipo == tipos_de_ponto.Ponto) {
+				if (pontos[i].tipo == tipos_de_ponto.Ponto)
+				{
 					Console.WriteLine(pontos[i].trecho_comeca.Count);
 					for (int j = 0; j < pontos[i].trecho_comeca.Count; j++)
 					{
@@ -281,43 +429,6 @@ namespace CESHP.MODEL
 					}
 				}
 
-			}
-
-
-			//ponto nulo = pontos.Where(p => p.tipo == tipos_de_ponto.Nulo).FirstOrDefault();
-			ponto ultimoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).FirstOrDefault();
-			ponto proximoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).FirstOrDefault();
-			ponto proximoHidrante = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante).FirstOrDefault();
-			for (int i = 0; i < trechos.Count; i++)
-			{
-				if (i == 0)
-				{
-					trechos[i].inicio = pontos.Where(p => p.tipo == tipos_de_ponto.Reservatorio).FirstOrDefault();
-					trechos[i].fim = proximoPonto;
-					ultimoPonto = proximoPonto;
-					proximoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto && pontos.IndexOf(p) > pontos.IndexOf(proximoPonto)).FirstOrDefault();
-				}
-				else
-				{
-					if (trechos[i].inicio.tipo == tipos_de_ponto.Nulo || trechos[i].fim.tipo == tipos_de_ponto.Nulo)
-					{
-						//trechos[i].inicio = nulo;
-						//trechos[i].fim = nulo;
-					}
-					else if (trechos[i].fim.tipo == tipos_de_ponto.Hidrante)
-					{
-						trechos[i].inicio = ultimoPonto;
-						trechos[i].fim = proximoHidrante;
-						proximoHidrante = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(proximoHidrante)).FirstOrDefault();
-					}
-					else if (trechos[i].fim.tipo == tipos_de_ponto.Ponto)
-					{
-						trechos[i].inicio = ultimoPonto;
-						trechos[i].fim = proximoPonto;
-						ultimoPonto = proximoPonto;
-						proximoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto && pontos.IndexOf(p) > pontos.IndexOf(proximoPonto)).FirstOrDefault();
-					}
-				}
 			}
 		}
 

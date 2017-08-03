@@ -235,17 +235,27 @@
 						</Style>
 					</DataGrid.RowStyle>
 					<DataGrid.Columns>
-						<DataGridTemplateColumn Header="Trecho" Width="140">
+
+						<DataGridTemplateColumn Header="Comp." Width="60">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Label Width="50" Content="{Binding Path=index, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+
+						<DataGridTemplateColumn Header="Trecho">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
-										<ComboBox Width="60" VerticalAlignment="Center"
+										<ComboBox Width="{Binding Path=DataContext.shp.minWidthPonto, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" VerticalAlignment="Center"
 													ItemsSource="{Binding Path=DataContext.shp.pontosPontosOnly, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
 													DisplayMemberPath="nome"
 													SelectedValue="{Binding Path=inicio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 												/>
 										<Label Content="-"/>
-										<ComboBox Width="60" VerticalAlignment="Center"
+										<ComboBox Width="{Binding Path=DataContext.shp.minWidthPonto, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" VerticalAlignment="Center"
 												ItemsSource="{Binding Path=DataContext.shp.pontos, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
 												DisplayMemberPath="nome"
 												SelectedValue="{Binding Path=fim, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -255,7 +265,15 @@
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
 
-						<DataGridTemplateColumn Header="Material" Width="130">
+						<DataGridTemplateColumn Header="Hid." Width="30">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<CheckBox  HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Path=isHidrante, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+						<DataGridTemplateColumn Header="Material" Width="130"  >
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<ComboBox Width="120" VerticalAlignment="Center"

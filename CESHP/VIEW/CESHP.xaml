@@ -232,6 +232,7 @@
 									<Setter Property="Background" Value="Khaki" />
 								</Trigger>
 							</Style.Triggers>
+							
 						</Style>
 					</DataGrid.RowStyle>
 					<DataGrid.Columns>

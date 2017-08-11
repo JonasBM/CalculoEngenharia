@@ -123,6 +123,8 @@ namespace CESHP.MODEL
 		[Description("trechos a calcular")]
 		public ObservableCollection<trecho> trechos { get { return _trechos; } set { _trechos = value; OnPropertyChanged(); } }
 
+		//public ObservableCollection<trecho> trechosPontosOnly { get { return _trechos.Where; } }
+
 		private trecho _trechosSelected;
 		public trecho trechosSelected { get { return _trechosSelected; } set { _trechosSelected = value; OnPropertyChanged(); } }
 
@@ -131,21 +133,9 @@ namespace CESHP.MODEL
 		[Description("pontos a calcular")]
 		public ObservableCollection<ponto> pontos { get { return _pontos; } set { _pontos = value; OnPropertyChanged(); } }
 
-		public IEnumerable<ponto> pontosPontosOnly
-		{
-			get
-			{
-				return _pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante);
-			}
-		}
+		public List<ponto> pontosPontosOnly { get { return _pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante).ToList(); } }
 
-		public IEnumerable<ponto> pontosHidrantesOnly
-		{
-			get
-			{
-				return _pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante);
-			}
-		}
+		public List<ponto> pontosHidrantesOnly { get { return _pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante).ToList(); } }
 
 		public shp()
 		{
@@ -239,7 +229,7 @@ namespace CESHP.MODEL
 		}
 
 
-
+		[ObsoleteAttribute("Não implementado.", true)]
 		public void moveTrechos(trecho __sourceTrecho, trecho __targetTrecho)
 		{
 			Debug.WriteLine("shp, moveTrechos(sourceTrecho,targetTrecho)");
@@ -258,9 +248,10 @@ namespace CESHP.MODEL
 					trechos[i].index = i;
 				}
 			}
-			
+
 		}
 
+		[ObsoleteAttribute("Não implementado.", true)]
 		public void moveTrechos(int __oldIndex, int __newIndex)
 		{
 			Debug.WriteLine("shp, moveTrechos(oldIndex,newIndex)");
@@ -290,7 +281,7 @@ namespace CESHP.MODEL
 			{
 				for (int i = 0; i < entreTrechoOriginal.Count(); i++)
 				{
-					
+
 					if (!entreTrechoOriginal[i].isHidrante)
 					{
 						entreTrechoOriginal[i].inicio = trechos.Where(t => !t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(entreTrechoOriginal[i])).FirstOrDefault().fim;
@@ -304,107 +295,92 @@ namespace CESHP.MODEL
 		{
 			Debug.WriteLine("shp, OrganizaLetras");
 			bool sobe = true;
-			trecho[] anteriorTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) < trechos.IndexOf(__trechoModificado)).ToArray();
-			trecho[] posteriorTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) > trechos.IndexOf(__trechoModificado)).ToArray();
+			//trecho[] anteriorTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) < trechos.IndexOf(__trechoModificado)).ToArray();
+			//trecho[] posteriorTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) > trechos.IndexOf(__trechoModificado)).ToArray();
 			trecho[] entreTrechoOriginal;
 			if (__oldIndexStarted > trechos.IndexOf(__trechoModificado))
 			{
 				sobe = true;
-				entreTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) <= __oldIndexStarted && trechos.IndexOf(t) >= trechos.IndexOf(__trechoModificado)).ToArray();
+				entreTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) <= __oldIndexStarted && trechos.IndexOf(t) > trechos.IndexOf(__trechoModificado)).ToArray();
 			}
 			else
 			{
 				sobe = false;
-				entreTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) >= __oldIndexStarted && trechos.IndexOf(t) <= trechos.IndexOf(__trechoModificado)).ToArray();
+				entreTrechoOriginal = trechos.Where(t => trechos.IndexOf(t) >= __oldIndexStarted && trechos.IndexOf(t) < trechos.IndexOf(__trechoModificado)).ToArray();
 			}
-			hidrante ultimoHidrante = trechos.Where(t => t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(entreTrechoOriginal.FirstOrDefault())).FirstOrDefault().fim as hidrante;
-			ponto ultimoPonto = trechos.Where(t => !t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(entreTrechoOriginal.FirstOrDefault())).FirstOrDefault().fim;
-
-			if (!__trechoModificado.isHidrante)
+			for (int i = 0; i < entreTrechoOriginal.Count(); i++)
 			{
-				for (int i = 0; i < entreTrechoOriginal.Count(); i++)
+				ponto pontoInicio;
+				if (sobe)
 				{
-					entreTrechoOriginal[i].inicio = ultimoPonto;
+					pontoInicio = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(entreTrechoOriginal[i].inicio)).FirstOrDefault();
+					if (pontoInicio == null)
+					{
+						//pontos.Add(ponto.novo(this));
+					}
+					if (pontoInicio == null) { Debug.WriteLine("pontoInicio" + sobe); throw new NotImplementedException(); }
+				}
+				else
+				{
+					pontoInicio = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) < pontos.IndexOf(entreTrechoOriginal[i].inicio)).FirstOrDefault();
+
+					if (pontoInicio == null) { Debug.WriteLine("pontoInicio"+ sobe); throw new NotImplementedException(); }
+
+				}
+				///////
+				
+				if (Math.Abs(pontosPontosOnly.IndexOf(entreTrechoOriginal[i].inicio) - pontosPontosOnly.IndexOf(pontoInicio)) < 2)
+				{
+					entreTrechoOriginal[i].inicio = pontoInicio;
+				}
+				if (!__trechoModificado.isHidrante)
+				{
 					if (!entreTrechoOriginal[i].isHidrante)
 					{
-						entreTrechoOriginal[i].fim = ultimoHidrante.proximo();
+						ponto pontoFim;
+						if (sobe)
+						{
+							pontoFim = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(entreTrechoOriginal[i].fim)).FirstOrDefault();
+						}
+						else
+						{
+							pontoFim = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) < pontos.IndexOf(entreTrechoOriginal[i].fim)).FirstOrDefault();
+						}
+						if (pontoFim == null) { Debug.WriteLine("pontoFim"); throw new NotImplementedException(); }
+						if (Math.Abs(pontosPontosOnly.IndexOf(entreTrechoOriginal[i].fim) - pontosPontosOnly.IndexOf(pontoFim)) < 2)
+						{
+							entreTrechoOriginal[i].fim = pontoFim;
+						}
+					}
+				}
+				else
+				{
+					if (entreTrechoOriginal[i].isHidrante)
+					{
+						ponto pontoHidrante = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(entreTrechoOriginal[i].fim)).FirstOrDefault();
+						if (Math.Abs(pontosHidrantesOnly.IndexOf(entreTrechoOriginal[i].fim) - pontosHidrantesOnly.IndexOf(pontoHidrante)) < 2)
+						{
+							entreTrechoOriginal[i].fim = pontoHidrante;
+						}
 					}
 				}
 			}
-
-
-			return;
-
-
-
-
-			__trechoModificado.inicio = anteriorTrechoOriginal.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).LastOrDefault().fim;
-
-			//hidrante proximoHidrante = (anteriorTrechoOriginal.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).LastOrDefault().fim as hidrante).proximo();
-			//ponto hidranteAtual = pontos.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).LastOrDefault().fim;
-
+			trecho trechoModificadoInicio = trechos.Where(t => !t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(__trechoModificado)).LastOrDefault();
+			if (trechoModificadoInicio == null) { Debug.WriteLine("pontoModificadoInicio"); throw new NotImplementedException(); }
+			__trechoModificado.inicio = trechoModificadoInicio.fim;
 			if (!__trechoModificado.isHidrante)
 			{
-				if (posteriorTrechoOriginal.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).FirstOrDefault() != null)
-				{
-					//__trechoModificado.fim = posteriorTrechoOriginal.Where(t => t.fim.tipo != tipos_de_ponto.Hidrante).FirstOrDefault().fim;
-				}
+				///////
+				trecho trechoModificadoFimPonto = trechos.Where(t => trechos.IndexOf(t) > trechos.IndexOf(__trechoModificado)).FirstOrDefault();
+				if (trechoModificadoFimPonto == null) { Debug.WriteLine("pontoModificadoFimPonto"); throw new NotImplementedException(); }
+				__trechoModificado.fim = trechoModificadoFimPonto.inicio;
 			}
 			else
 			{
-				//__trechoModificado.fim = posteriorTrechoOriginal.Where(t => t.isHidrante).FirstOrDefault().fim;
+				trecho trechoModificadoFimHidrante = trechos.Where(t => t.isHidrante && trechos.IndexOf(t) < trechos.IndexOf(__trechoModificado)).LastOrDefault();
+				if (trechoModificadoFimHidrante == null) { Debug.WriteLine("pontoModificadoFimHidrante"); throw new NotImplementedException(); }
+				__trechoModificado.fim = (trechoModificadoFimHidrante.fim as hidrante).proximo();
 			}
-
-			if (__oldIndexStarted > trechos.IndexOf(__trechoModificado))
-			{
-				for (int i = 0; i < posteriorTrechoOriginal.Count(); i++)
-				{
-					if (trechos.IndexOf(posteriorTrechoOriginal[i]) <= __oldIndexStarted)
-					{
-						if (!__trechoModificado.isHidrante)
-						{
-							posteriorTrechoOriginal[i].inicio = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(posteriorTrechoOriginal[i].inicio)).FirstOrDefault();
-							if (!posteriorTrechoOriginal[i].isHidrante)
-							{
-								posteriorTrechoOriginal[i].fim = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(posteriorTrechoOriginal[i].fim)).FirstOrDefault();
-							}
-						}
-						else
-						{
-							if (posteriorTrechoOriginal[i].fim.tipo == tipos_de_ponto.Hidrante)
-							{
-								posteriorTrechoOriginal[i].fim = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && pontos.IndexOf(p) > pontos.IndexOf(posteriorTrechoOriginal[i].fim)).FirstOrDefault();
-							}
-						}
-					}
-				}
-			}
-
-			if (__oldIndexStarted < trechos.IndexOf(__trechoModificado))
-			{
-				for (int i = 0; i < anteriorTrechoOriginal.Count(); i++)
-				{
-					if (trechos.IndexOf(anteriorTrechoOriginal[i]) >= __oldIndexStarted)
-					{
-						if (!__trechoModificado.isHidrante)
-						{
-							anteriorTrechoOriginal[i].inicio = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) < pontos.IndexOf(anteriorTrechoOriginal[i].inicio)).LastOrDefault();
-							if (!anteriorTrechoOriginal[i].isHidrante)
-							{
-								anteriorTrechoOriginal[i].fim = pontos.Where(p => p.tipo != tipos_de_ponto.Hidrante && pontos.IndexOf(p) < pontos.IndexOf(anteriorTrechoOriginal[i].fim)).LastOrDefault();
-							}
-						}
-						else
-						{
-							if (anteriorTrechoOriginal[i].fim.tipo == tipos_de_ponto.Hidrante)
-							{
-								anteriorTrechoOriginal[i].fim = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && pontos.IndexOf(p) < pontos.IndexOf(anteriorTrechoOriginal[i].fim)).LastOrDefault();
-							}
-						}
-					}
-				}
-			}
-
 		}
 
 		public void OrganizaTrechos()

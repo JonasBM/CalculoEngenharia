@@ -455,55 +455,64 @@ namespace CESHP.VIEWMODEL
 
 		#region DragNDrop
 
-		//bool dragStarted = false;
-		//int oldIndexStarted = 0;
+		bool dragStarted = false;
+		int oldIndexStarted = 0;
+		trecho trechoModificado = null;
 		public void DragOver(IDropInfo dropInfo)
 		{
-			
 			//Debug.WriteLine("CESHPVM, DragOver");
 			if (dropInfo.Data != null && dropInfo.TargetItem != null && dropInfo.Data is trecho && dropInfo.TargetItem is trecho)
 			{
-				dropInfo.DropTargetAdorner = null;
+				dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
 				dropInfo.Effects = DragDropEffects.Move;
-
-				//trecho sourceItem = dropInfo.Data as trecho;
-				//trecho targetItem = dropInfo.TargetItem as trecho;
-
-				shp.moveTrechos(dropInfo.Data as trecho, dropInfo.TargetItem as trecho);
-
-				//int oldIndex = shp.trechos.IndexOf(sourceItem);
-				//int newIndex = shp.trechos.IndexOf(targetItem);
-
-
-
+				/*
+				trecho sourceItem = dropInfo.Data as trecho;
+				trecho targetItem = dropInfo.TargetItem as trecho;
+				//shp.moveTrechos(dropInfo.Data as trecho, dropInfo.TargetItem as trecho);
+				int oldIndex = shp.trechos.IndexOf(sourceItem);
+				int newIndex = shp.trechos.IndexOf(targetItem);
+				shp.trechos.Move(oldIndex, newIndex);
 				//Debug.WriteLine("oldIndex, newIndex: {0} to {1}", oldIndex, newIndex);
-				//if (!dragStarted)
-				//{
-					//oldIndexStarted = oldIndex;
-					//dragStarted = true;
-				//}
-				
-				
+				if (!dragStarted)
+				{
+					trechoModificado = sourceItem;
+					oldIndexStarted = oldIndex;
+					dragStarted = true;
+				}
+				*/
 			}
 		}
 		public void Drop(IDropInfo dropInfo)
 		{
 			Debug.WriteLine("CESHPVM, Drop");
-			//shp.IsEnabled = false;
+			for (int i = 0; i < shp.trechos.Count; i++) { shp.trechos[i].index = shp.trechos.IndexOf(shp.trechos[i]); }
+			shp.IsEnabled = false;
 			if (dropInfo.Data != null && dropInfo.TargetItem != null && dropInfo.Data is trecho && dropInfo.TargetItem is trecho)
 			{
-				dropInfo.DropTargetAdorner = null;
+				dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
 				dropInfo.Effects = DragDropEffects.Move;
-
-				//trecho sourceItem = dropInfo.Data as trecho;
-				//trecho targetItem = dropInfo.TargetItem as trecho;
-
-				//shp.OrganizaLetras(sourceItem, oldIndexStarted);
+				trecho sourceItem = dropInfo.Data as trecho;
+				trecho targetItem = dropInfo.TargetItem as trecho;
+				int oldIndex = shp.trechos.IndexOf(sourceItem);
+				int newIndex = shp.trechos.IndexOf(targetItem);
+				shp.trechos.Move(oldIndex, newIndex);
+				Debug.WriteLine("oldIndex, newIndex: {0} to {1}", oldIndex, newIndex);
+				shp.OrganizaLetras(sourceItem, oldIndex);
 			}
-			//shp.IsEnabled = true;
 
-			//dragStarted = false;
-			//oldIndexStarted = 0;
+			//if (dropInfo.Data != null && dropInfo.TargetItem != null && dropInfo.Data is trecho && dropInfo.TargetItem is trecho)
+			//{
+			//dropInfo.DropTargetAdorner = null;
+			//dropInfo.Effects = DragDropEffects.Move;
+			//trecho sourceItem = dropInfo.Data as trecho;
+			//trecho targetItem = dropInfo.TargetItem as trecho;
+			//shp.OrganizaLetras(trechoModificado, oldIndexStarted);
+			//}
+			//shp.OrganizaLetras(trechoModificado, oldIndexStarted);
+			shp.IsEnabled = true;
+			trechoModificado = null;
+			oldIndexStarted = 0;
+			dragStarted = false;
 		}
 		#endregion
 	}

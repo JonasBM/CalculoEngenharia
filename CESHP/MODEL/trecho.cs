@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace CESHP.MODEL
 {
@@ -27,6 +28,9 @@ namespace CESHP.MODEL
 				}
 			}
 		}
+
+		private Color _teste = Colors.Aquamarine;
+		public Color teste { get { return _teste; } set { _teste = value; OnPropertyChanged(); } }
 
 		private int _index;
 		[Description("identificação do trecho")]
@@ -214,47 +218,6 @@ namespace CESHP.MODEL
 			material_index = 0;
 			diametro_index = data.materiais[material_index].diametro_minimo_index;
 			vazao = 0;
-		}
-
-		public bool Equals(trecho other)
-		{
-			Debug.WriteLine("trecho, Equals");
-			if (other != null)
-			{
-				if (
-				index.Equals(other.index) &&
-				nome.Equals(other.nome) &&
-				inicio.Equals(other.inicio) &&
-				fim.Equals(other.fim) &&
-				diametro_index.Equals(other.diametro_index) &&
-				material_index.Equals(other.material_index) &&
-				comprimento.Equals(other.comprimento) &&
-				desnivel.Equals(other.desnivel) &&
-				vazao.Equals(other.vazao)
-				)
-				{
-					bool pecas_indexesOk = true;
-					if (pecas_indexes.Count == other.pecas_indexes.Count)
-					{
-						for (int i = 0; i < pecas_indexes.Count; i++)
-						{
-							if (!pecas_indexes[i].Equals(other.pecas_indexes[i]))
-							{
-								pecas_indexesOk = false;
-							}
-						}
-					}
-					else
-					{
-						pecas_indexesOk = false;
-					}
-					if (pecas_indexesOk)
-					{
-						return true;
-					}
-				}
-			}
-			return false;
 		}
 	}
 }

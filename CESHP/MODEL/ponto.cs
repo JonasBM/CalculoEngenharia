@@ -31,6 +31,7 @@ namespace CESHP.MODEL
 		}
 
 
+
 		private int _index;
 		[Description("identificação do ponto")]
 		public int index { get { return _index; } set { _index = value; OnPropertyChanged(); } }
@@ -90,47 +91,35 @@ namespace CESHP.MODEL
 		[Description("perda de pressão no ponto")]
 		public float perda_de_pressao { get { return _perda_de_pressao; } set { _perda_de_pressao = value; OnPropertyChanged(); } }
 
-		public bool Equals(ponto other)
+		public static ponto novo(shp __shpParent, tipos_de_ponto __tipo = tipos_de_ponto.Ponto)
 		{
-			Debug.WriteLine("ponto, Equals");
-			Debug.WriteLine(other.trecho_comeca);
-			if (other != null)
-			{
-				if (
-				index.Equals(other.index) &&
-				nome.Equals(other.nome) &&
-				tipo.Equals(other.tipo) &&
-				trecho_termina.Equals(other.trecho_termina) &&
-				pressao.Equals(other.pressao) &&
-				vazao_criada.Equals(other.vazao_criada) &&
-				vazao_acumulada.Equals(other.vazao_acumulada) &&
-				perda_de_pressao.Equals(other.perda_de_pressao)
-				)
-				{
-					bool trecho_comecaOk = true;
-					if (trecho_comeca.Count == other.trecho_comeca.Count)
-					{
-						for (int i = 0; i < trecho_comeca.Count; i++)
-						{
-							if (!trecho_comeca[i].Equals(other.trecho_comeca[i]))
-							{
-								trecho_comecaOk = false;
-							}
-						}
-					}
-					else
-					{
-						trecho_comecaOk = false;
-					}
-					if (trecho_comecaOk)
-					{
-						return true;
-					}
-				}
-			}
-			return false;
+			Debug.WriteLine("ponto, novo");
+			ponto ultimoPonto = __shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).LastOrDefault();
+			//string letra = Regex.Replace(ultimoHidrante.nome, @"[^0-9]", "");
+			//int numero = int.Parse(stringNumero);
+			data.alfabeto.proxima(ultimoPonto.nome);
+			return new ponto(data.alfabeto.proxima(ultimoPonto.nome), __shpParent, __tipo);
 		}
+
+		//private ponto _proximo;
+		//public ponto proximo { get { return _proximo; } set { _proximo = value; OnPropertyChanged(); } }
+
+
+		public ponto proximo()
+		{
+
+			return null;
+		}
+
+		public ponto anterior()
+		{
+
+			return null;
+		}
+
 	}
+
+	
 
 	[Serializable]
 	public class nulo : ponto

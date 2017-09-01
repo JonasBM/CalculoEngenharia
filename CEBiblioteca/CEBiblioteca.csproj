@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseVM.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="GongSolutions.WPF.DragDrop\DefaultDragHandler.cs" />
     <Compile Include="GongSolutions.WPF.DragDrop\DefaultDropHandler.cs" />
     <Compile Include="GongSolutions.WPF.DragDrop\DragAdorner.cs" />
@@ -71,6 +72,8 @@
     <Compile Include="GongSolutions.WPF.DragDrop\Utilities\TreeViewItemExtensions.cs" />
     <Compile Include="GongSolutions.WPF.DragDrop\Utilities\TypeUtilities.cs" />
     <Compile Include="GongSolutions.WPF.DragDrop\Utilities\VisualTreeExtensions.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="Processo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

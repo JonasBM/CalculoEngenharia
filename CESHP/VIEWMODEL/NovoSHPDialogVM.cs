@@ -14,11 +14,11 @@ namespace CESHP.VIEWMODEL
 	{
 		#region Parametros
 
-		private int _numero_hidrantes;
-		public int numero_hidrantes { get { return _numero_hidrantes; } set { _numero_hidrantes = value; OnPropertyChanged(); } }
+		private int _numeroHidrantes;
+		public int numeroHidrantes { get { return _numeroHidrantes; } set { _numeroHidrantes = value; OnPropertyChanged(); } }
 
-		private float _altura_piso_a_piso;
-		public float altura_piso_a_piso { get { return _altura_piso_a_piso; } set { _altura_piso_a_piso = value; OnPropertyChanged(); } }
+		private float _alturaPisoAPiso;
+		public float alturaPisoAPiso { get { return _alturaPisoAPiso; } set { _alturaPisoAPiso = value; OnPropertyChanged(); } }
 
 		public bool salvo { get; set; }
 
@@ -33,8 +33,8 @@ namespace CESHP.VIEWMODEL
 		public void NovoSHP()
 		{
 			Debug.WriteLine("NovoSHPDialogVM, NovoSHP");
-			numero_hidrantes = 7;
-			altura_piso_a_piso = (float)2.88;
+			numeroHidrantes = 7;
+			alturaPisoAPiso = (float)2.88;
 			salvo = false;
 
 			window = new Window
@@ -81,7 +81,7 @@ namespace CESHP.VIEWMODEL
 		public bool canSalva()
 		{
 			if (
-				numero_hidrantes > 0 || altura_piso_a_piso > 0
+				numeroHidrantes > 0 || alturaPisoAPiso > 0
 			)
 			{
 				return true;

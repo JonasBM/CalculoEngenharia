@@ -15,12 +15,18 @@ namespace CESHP.VIEWMODEL
 {
 	class EditarPecasDialogVM : BaseVM, IDropTarget
 	{
+
+		#region PARAMETROS DIALOG
+		private ICommand _SalvaCommand;
+		private ICommand _CancelaCommand;
+		public bool salvo { get; set; }
+		private Window window;
+		#endregion
+
 		#region Parametros
 
 		private ICommand _AdicionarPecaCommand;
 		private ICommand _RemoverPecaCommand;
-
-		
 
 		private ObservableCollection<peca> _pecas;
 		public ObservableCollection<peca> pecas
@@ -61,13 +67,7 @@ namespace CESHP.VIEWMODEL
 		private trecho _trecho;
 		public trecho trecho { get { return _trecho; } set { _trecho = value; OnPropertyChanged(); } }
 
-		public bool salvo { get; set; }
-
-		private ICommand _SalvaCommand;
-		private ICommand _CancelaCommand;
-
-		private Window window;
-
+		
 		#endregion
 
 		#region EditarPecas
@@ -75,9 +75,9 @@ namespace CESHP.VIEWMODEL
 		{
 			trecho = __trecho;
 			pecas = new ObservableCollection<peca>();
-			for (int i = 0; i < trecho.pecas_indexes.Count; i++)
+			for (int i = 0; i < trecho.pecasIndexes.Count; i++)
 			{
-				pecas.Add(new peca(trecho.material.pecas[trecho.pecas_indexes[i]].index, trecho.material.pecas[trecho.pecas_indexes[i]].nome));
+				pecas.Add(new peca(trecho.material.pecas[trecho.pecasIndexes[i]].index, trecho.material.pecas[trecho.pecasIndexes[i]].nome));
 			}
 			Debug.WriteLine("EditarPecasDialogVM, EditarPecas");
 			salvo = false;
@@ -224,7 +224,7 @@ namespace CESHP.VIEWMODEL
 				peca targetItem = dropInfo.TargetItem as peca;
 				int oldIndex = pecas.IndexOf(sourceItem);
 				int newIndex = pecas.IndexOf(targetItem);
-				Debug.WriteLine("oldIndex, newIndex: {0} to {1}", oldIndex, newIndex);
+				//Debug.WriteLine("oldIndex, newIndex: {0} to {1}", oldIndex, newIndex);
 				if (oldIndex != newIndex)
 				{
 					pecas.Move(oldIndex, newIndex);

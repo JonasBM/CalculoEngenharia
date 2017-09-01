@@ -10,7 +10,9 @@
 		MinWidth="{Binding Path=minWidth, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 		Height="400"
 		Width="400"
-        Title="Prevenção - Cálculo Engenharia" Icon="..\CEIcon.ico">
+        Title="{Binding Path=titulo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Icon="..\CEIcon.ico"
+		>
+	
 	<ContentPresenter Margin="10" Content="{Binding Path=conteudo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 </Window>
 

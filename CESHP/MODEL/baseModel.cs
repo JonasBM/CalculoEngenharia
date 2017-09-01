@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace CESHP.MODEL
 {
+	[Serializable]
 	public class baseModel : INotifyPropertyChanged
 	{
+		[field: NonSerializedAttribute()]
 		public event PropertyChangedEventHandler PropertyChanged;
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
@@ -29,8 +31,5 @@ namespace CESHP.MODEL
 			OnPropertyChanged(propertyName);
 			return true;
 		}
-
-
-
 	}
 }

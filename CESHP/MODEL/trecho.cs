@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace CESHP.MODEL
@@ -14,11 +15,12 @@ namespace CESHP.MODEL
 	[Serializable]
 	public class trecho : baseModel //, IEquatable<trecho>
 	{
-		public Visibility show_hidrante
+		#region VISIBILIDADE
+		public Visibility showHidrante
 		{
 			get
 			{
-				if (fim is hidrante)
+				if (isHidrante)
 				{
 					return Visibility.Visible;
 				}
@@ -29,9 +31,23 @@ namespace CESHP.MODEL
 			}
 		}
 
-		private Color _teste = Colors.Aquamarine;
-		public Color teste { get { return _teste; } set { _teste = value; OnPropertyChanged(); } }
+		public Visibility showNotHidrante
+		{
+			get
+			{
+				if (!isHidrante)
+				{
+					return Visibility.Visible;
+				}
+				else
+				{
+					return Visibility.Collapsed;
+				}
+			}
+		}
+		#endregion
 
+		#region DADOS
 		private int _index;
 		[Description("identificação do trecho")]
 		public int index { get { return _index; } set { _index = value; OnPropertyChanged(); } }
@@ -49,24 +65,13 @@ namespace CESHP.MODEL
 			get { return _inicio; }
 			set
 			{
-				if (_inicio != null)
+				if (value != null)
 				{
-					if (_inicio.trecho_comeca.Contains(this))
-					{
-						_inicio.trecho_comeca.Remove(this);
-					}
-				}
-				_inicio = value;
-				if (_inicio != null)
-				{
-					_inicio.trecho_comeca.Add(this);
-				}
-				OnPropertyChanged();
-				if (shpParent.IsEnabled)
-				{
-					shpParent.IsEnabled = false;
-					shpParent.OrganizaTrechos();
-					shpParent.IsEnabled = true;
+					if (_inicio != null) { if (_inicio.trechoComeca.Contains(this)) { _inicio.trechoComeca.Remove(this); } }
+					_inicio = value;
+					if (_inicio != null) { _inicio.trechoComeca.Add(this); }
+					if (_inicio.isLast) { ponto.Novo(shpParent, _inicio.tipo); }
+					OnPropertyChanged();
 				}
 			}
 		}
@@ -74,23 +79,14 @@ namespace CESHP.MODEL
 		{
 			get
 			{
-
-				if (fim != null)
-				{
-					if (fim is hidrante)
-					{
-						return true;
-					}
-				}
+				if (fim != null) { if (fim is hidrante) { return true; } }
 				return false;
-
 			}
 			set
 			{
-				Console.WriteLine("isHidrante change");
+				if (value) { fim = HidranteAtual(true); } else { fim = PontoPosterior(true); }
 			}
 		}
-
 		private ponto _fim;
 		[Description("ponto final do trecho")]
 		public ponto fim
@@ -98,104 +94,124 @@ namespace CESHP.MODEL
 			get { return _fim; }
 			set
 			{
-				if (_fim != null)
+				if (value != null)
 				{
-					if (_fim.trecho_termina != null)
-					{
-						_fim.trecho_termina = null;
-					}
-					_fim.trecho_termina = this;
+					if (_fim != null) { _fim.trechoTermina = null; }
+					if (value.trechoTermina != null) { value.trechoTermina.SetFimSemCadeia(_fim, value.trechoTermina); }
+					_fim = value;
+					value.trechoTermina = this;
+					if (_fim.isLast) { ponto.Novo(shpParent, _fim.tipo); }
+					OnPropertyChanged();
+					OnPropertyChanged("isHidrante");
+					OnPropertyChanged("showHidrante");
+					OnPropertyChanged("showNotHidrante");
 				}
-				_fim = value;
-				OnPropertyChanged();
-				OnPropertyChanged("isHidrante");
-				OnPropertyChanged("show_hidrante");
 			}
 		}
-
-		private int _diametro_index;
-		[Description("diametro em mm")]
-		public int diametro_index { get { return _diametro_index; } set { _diametro_index = value; OnPropertyChanged(); } }
-
-		private int _material_index;
-		[Description("material")]
-		public int material_index
+		public void SetFimSemCadeia(ponto __fim, trecho __trechoTermina)
 		{
-			get { return _material_index; }
+			_fim = __fim;
+			if (_fim != null) { _fim.trechoTermina = __trechoTermina; }
+			OnPropertyChanged("fim");
+			OnPropertyChanged("isHidrante");
+			OnPropertyChanged("showHidrante");
+			OnPropertyChanged("showNotHidrante");
+		}
+
+		private int _diametroIndex;
+		[Description("diametro em mm")]
+		public int diametroIndex { get { return _diametroIndex; } set { _diametroIndex = value; OnPropertyChanged(); } }
+
+		private int _materialIndex;
+		[Description("material")]
+		public int materialIndex
+		{
+			get { return _materialIndex; }
 			set
 			{
-				if (value != _material_index)
+				if (value != _materialIndex)
 				{
-					_material_index = value;
+					_materialIndex = value;
 					OnPropertyChanged();
 					OnPropertyChanged("material");
-					diametro_index = data.materiais[material_index].diametro_minimo_index;
+					diametroIndex = data.materiais[materialIndex].diametro_minimo_index;
 				}
 			}
 		}
 
-		public material material { get { return data.materiais[material_index]; } }
+		public material material { get { return data.materiais[materialIndex]; } }
 
 		private float _comprimento;
 		[Description("comprimento do trecho")]
 		public float comprimento { get { return _comprimento; } set { _comprimento = value; OnPropertyChanged(); } }
 
-		private float _comprimento_horizontal;
+		private float _comprimentoHorizontal;
 		[Description("comprimento horizontal do trecho")]
 		[ObsoleteAttribute("Não implementado.", true)]
-		public float comprimento_horizontal { get { return _comprimento_horizontal; } set { _comprimento_horizontal = value; OnPropertyChanged(); } }
+		public float comprimentoHorizontal { get { return _comprimentoHorizontal; } set { _comprimentoHorizontal = value; OnPropertyChanged(); } }
 
-		private float _comprimento_vertical;
+		private float _comprimentoVertical;
 		[Description("comprimento vertical do trecho")]
 		[ObsoleteAttribute("Não implementado.", true)]
-		public float comprimento_vertical { get { return _comprimento_vertical; } set { _comprimento_vertical = value; OnPropertyChanged(); } }
+		public float comprimentoVertical { get { return _comprimentoVertical; } set { _comprimentoVertical = value; OnPropertyChanged(); } }
 
 		private float _desnivel;
 		[Description("desnivel do trecho")]
 		public float desnivel { get { return _desnivel; } set { _desnivel = value; OnPropertyChanged(); } }
 
+		private int _MaterialMangueiraIndex;
+		[Description("desnivel do trecho")]
+		public int MaterialMangueiraIndex { get { return _MaterialMangueiraIndex; } set { _MaterialMangueiraIndex = value; OnPropertyChanged(); } }
+
+		public mangueira MaterialMangueira { get { return data.mangueiras[MaterialMangueiraIndex]; } }
+
+		private int _comprimentoDaMangueira;
+		[Description("comprimento da mangueira")]
+		public int comprimentoDaMangueira { get { return _comprimentoDaMangueira; } set { _comprimentoDaMangueira = value; OnPropertyChanged(); } }
+
+		private float _desnivelDaMangueira;
+		[Description("desnivel da mangueira")]
+		public float desnivelDaMangueira { get { return _desnivelDaMangueira; } set { _desnivelDaMangueira = value; OnPropertyChanged(); } }
+
 		private float _vazao;
 		[Description("vazão de saída no ponto")]
 		public float vazao { get { return _vazao; } set { _vazao = value; OnPropertyChanged(); } }
 
-		private ObservableCollection<int> _pecas_indexes;
+		private ObservableCollection<int> _pecasIndexes;
 		[Description("peças no trecho")]
-		public ObservableCollection<int> pecas_indexes
+		public ObservableCollection<int> pecasIndexes
 		{
 			get
 			{
-				if (_pecas_indexes == null)
-				{
-					_pecas_indexes = new ObservableCollection<int>();
-				}
-				return _pecas_indexes;
+				if (_pecasIndexes == null) { _pecasIndexes = new ObservableCollection<int>(); }
+				return _pecasIndexes;
 			}
 			set
 			{
-				_pecas_indexes = value;
+				_pecasIndexes = value;
 				OnPropertyChanged();
 			}
 		}
 
-		public float comprimento_equivalente
+		public float comprimentoEquivalente
 		{
 			get
 			{
 				float total = 0;
-				for (int i = 0; i < pecas_indexes.Count; i++)
+				for (int i = 0; i < pecasIndexes.Count; i++)
 				{
-					total += (data.materiais[material_index].pecas[pecas_indexes[i]]).comprimentos_equivalentes.Where(ce => ce.diametro.diametro_nominal == data.materiais[material_index].diametros[diametro_index].diametro_nominal).FirstOrDefault().perda;
+					total += (data.materiais[materialIndex].pecas[pecasIndexes[i]]).comprimentos_equivalentes.Where(ce => ce.diametro.diametro_nominal == data.materiais[materialIndex].diametros[diametroIndex].diametro_nominal).FirstOrDefault().perda;
 				}
 				return total;
 			}
 		}
 
-		public float J
+		public float j
 		{
 			get
 			{
 				float j = 0;
-				j = (float)((10.65 * Math.Pow(vazao, 1.852)) / (Math.Pow(data.materiais[material_index].crt, 1.852) * Math.Pow(data.materiais[material_index].diametros[diametro_index].diametro_nominal_M, 4.87)));
+				j = (float)((10.65 * Math.Pow(vazao, 1.852)) / (Math.Pow(data.materiais[materialIndex].crt, 1.852) * Math.Pow(data.materiais[materialIndex].diametros[diametroIndex].diametro_nominal_M, 4.87)));
 				return j;
 			}
 		}
@@ -205,8 +221,9 @@ namespace CESHP.MODEL
 		[ObsoleteAttribute("Não implementado.", true)]
 		public float cota { get { return _cota; } set { _cota = value; OnPropertyChanged(); } }
 
-		public float comprimento_total { get { return comprimento + comprimento_equivalente; } }
+		public float comprimentoTotal { get { return comprimento + comprimentoEquivalente; } }
 
+		#endregion
 		public trecho(ponto __inicio, ponto __fim, float __comprimento, float __desnivel, shp __shpParent)
 		{
 			Debug.WriteLine("trecho, trecho");
@@ -215,9 +232,94 @@ namespace CESHP.MODEL
 			fim = __fim;
 			comprimento = __comprimento;
 			desnivel = __desnivel;
-			material_index = 0;
-			diametro_index = data.materiais[material_index].diametro_minimo_index;
+			materialIndex = data.materiaisDefaultIndex;
+			diametroIndex = data.materiais[materialIndex].diametro_minimo_index;
+			MaterialMangueiraIndex = data.mangueirasDefaultIndex;
+			comprimentoDaMangueira = 30;
+			desnivelDaMangueira = (float)0.00;
 			vazao = 0;
+			shpParent.trechos.Add(this);
+			index = shpParent.trechos.IndexOf(this);
+			shpParent.Refresh();
+		}
+		public ponto PontoAnterior()
+		{
+			Debug.WriteLine("trecho, PontoAnterior");
+			trecho trechoAnterior = shpParent.trechos.Where(t => !t.isHidrante && shpParent.trechos.IndexOf(t) < shpParent.trechos.IndexOf(this)).LastOrDefault();
+			if (trechoAnterior == null)
+			{
+				return shpParent.PrimeiroReservatorio();
+			}
+			else
+			{
+				return trechoAnterior.fim;
+			}
+		}
+		public ponto PontoPosterior(bool __semUSo = false)
+		{
+			Debug.WriteLine("trecho, PontoPosterior");
+			trecho trechoPosterior = shpParent.trechos.Where(t => !t.isHidrante && shpParent.trechos.IndexOf(t) > shpParent.trechos.IndexOf(this)).FirstOrDefault();
+			if (trechoPosterior == null)
+			{
+				return inicio.Proximo();
+			}
+			else
+			{
+				if (__semUSo)
+				{
+					return inicio.ProximoSemUso();
+				}
+				else
+				{
+					return trechoPosterior.inicio;
+				}
+			}
+		}
+		public hidrante HidranteAnterior()
+		{
+			Debug.WriteLine("trecho, HidranteAnterior");
+			trecho trechoHidranteAnterior = shpParent.trechos.Where(t => t.isHidrante && shpParent.trechos.IndexOf(t) < shpParent.trechos.IndexOf(this)).LastOrDefault();
+			if (trechoHidranteAnterior == null)
+			{
+				return null;
+			}
+			else
+			{
+				return trechoHidranteAnterior.fim as hidrante;
+			}
+		}
+		public hidrante HidrantePosterior()
+		{
+			Debug.WriteLine("trecho, HidrantePosterior");
+			trecho trechoHidrantePosterior = shpParent.trechos.Where(t => t.isHidrante && shpParent.trechos.IndexOf(t) > shpParent.trechos.IndexOf(this)).FirstOrDefault();
+			if (trechoHidrantePosterior == null)
+			{
+				return fim.Proximo() as hidrante;
+			}
+			else
+			{
+				return trechoHidrantePosterior.fim as hidrante;
+			}
+		}
+		public hidrante HidranteAtual(bool __semUSo = false)
+		{
+			Debug.WriteLine("trecho, HidranteAtual");
+			hidrante pontoHidrante = HidranteAnterior();
+			if (pontoHidrante == null)
+			{
+				return shpParent.PrimeiroHidrante();
+			}
+			else
+			{
+				if (__semUSo)
+				{
+					return pontoHidrante.ProximoSemUso() as hidrante;
+				}
+				else
+				{
+					return pontoHidrante.Proximo() as hidrante;
+				}
+			}
 		}
 	}
 }

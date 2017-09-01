@@ -48,31 +48,48 @@
   <ItemGroup>
     <Compile Include="data.cs" />
     <Compile Include="MODEL\baseModel.cs" />
+    <Compile Include="MODEL\mangueira.cs" />
     <Compile Include="MODEL\material.cs" />
     <Compile Include="MODEL\Norma.cs" />
     <Compile Include="MODEL\ponto.cs" />
     <Compile Include="MODEL\shp.cs" />
     <Compile Include="MODEL\trecho.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VIEWMODEL\AdicionarPontoDialogVM.cs" />
     <Compile Include="VIEWMODEL\CESHPVM.cs" />
     <Compile Include="VIEWMODEL\EditarPecasDialogVM.cs" />
+    <Compile Include="VIEWMODEL\AdicionarTrechoDialogVM.cs" />
     <Compile Include="VIEWMODEL\NovoSHPDialogVM.cs" />
+    <Compile Include="VIEW\AdicionarPontoDialog.xaml.cs">
+      <DependentUpon>AdicionarPontoDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\CESHP.xaml.cs">
       <DependentUpon>CESHP.xaml</DependentUpon>
     </Compile>
     <Compile Include="VIEW\EditarPecasDialog.xaml.cs">
       <DependentUpon>EditarPecasDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\AdicionarTrechoDialog.xaml.cs">
+      <DependentUpon>AdicionarTrechoDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\NovoSHPDialog.xaml.cs">
       <DependentUpon>NovoSHPDialog.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="VIEW\AdicionarPontoDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="VIEW\CESHP.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="VIEW\EditarPecasDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VIEW\AdicionarTrechoDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

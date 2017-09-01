@@ -15,10 +15,19 @@ namespace CESHP
 
 		static public ObservableCollection<Norma> normas;
 
+		static public int normasDefaultIndex;
+
 		static public ObservableCollection<jato> jatos;
 
+		static public int jatosDefaultIndex;
 
 		static public ObservableCollection<material> materiais;
+
+		static public int materiaisDefaultIndex;
+		
+		static public ObservableCollection<mangueira> mangueiras;
+
+		static public int mangueirasDefaultIndex;
 
 		static data()
 		{
@@ -26,7 +35,7 @@ namespace CESHP
 			jatos.Add(jato.Solido);
 			jatos.Add(jato.Regulavel);
 
-
+			jatosDefaultIndex = 0;
 
 			normas = new ObservableCollection<Norma>();
 
@@ -53,7 +62,37 @@ namespace CESHP
 
 			#endregion
 
-			
+			normasDefaultIndex = 0;
+
+			#region MANGUEIRAS
+			mangueiras = new ObservableCollection<mangueira>();
+			mangueiras.Add(new mangueira("25mm", "", 150, new diametro(0, "1", 25)));
+			mangueiras.Add(new mangueira("40mm", "", 140, new diametro(1, "1 1/2", 40)));
+			mangueiras.Add(new mangueira("65mm", "", 140, new diametro(2, "2 1/2", 65)));
+
+			mangueirasDefaultIndex = 1;
+
+			/*
+				Coeficiente de rugosidade
+				Ferro fundido ou Aço preto 100
+				Aço galvanizado 120
+				Mangueiras de incêndio (borracha) 140
+				Cobre ou PVC 150
+
+			NBR NBR NBR 13714
+				Tipo de tubo Fator “C”
+				Ferro fundido ou dúctil sem revestimento interno 100
+				Aço preto (sistema de tubo seco) 100
+				Aço preto (sistema de tubo molhado) 120
+				Galvanizado 120
+				Plástico 150
+				Ferro fundido ou dúctil com revestimento interno de cimento 140
+				Cobre 150
+			*/
+
+			//string[] nomesDiametros;
+			//int[] diametros;
+			#endregion
 
 			materiais = new ObservableCollection<material>();
 			string[] nomes_diametros;
@@ -83,7 +122,7 @@ namespace CESHP
 			#endregion
 
 			#region PEÇAS DE AÇO
-			
+
 
 			#region PEÇAS DE AÇO - NOMES
 			nomes_pecas = new string[]
@@ -107,7 +146,7 @@ namespace CESHP
 			};
 			#endregion
 
-			
+
 			#region PEÇAS DE AÇO - PERDAS
 			perdas_pecas = new double[nomes_pecas.Length][];
 			//                               "1/4","3/8","1/2","3/4",  "1",11/4",11/2",  "2",21/2",  "3",  "4",  "5",  "6"
@@ -189,7 +228,7 @@ namespace CESHP
 			#region PEÇAS DE PVC - PERDAS
 			perdas_pecas = new double[nomes_pecas.Length][];
 			//                              "3/4",  "1",11/4",11/2",  "2",21/2",  "3",  "4",  "5",  "6"
-			perdas_pecas[00] = new double[] {0.70, 0.94, 1.17, 1.41, 1.88, 2.35, 2.82, 3.76, 4.70, 5.64 }; //Teste
+			perdas_pecas[00] = new double[] { 0.70, 0.94, 1.17, 1.41, 1.88, 2.35, 2.82, 3.76, 4.70, 5.64 }; //Teste
 			#endregion
 
 			#region PEÇAS DE PVC - APLICA
@@ -218,6 +257,8 @@ namespace CESHP
 
 			materiais.Add(pvc);
 			#endregion
+
+			materiaisDefaultIndex = 0;
 
 		}
 
@@ -248,14 +289,14 @@ namespace CESHP
 		static public class alfabeto
 		{
 
-			static private Regex rgx_hidrante = new Regex(@"^[hH]\d+[0-9]*$");
+			//static private Regex rgx_hidrante = new Regex(@"^[hH]\d+[0-9]*$");
 
 			static private Regex rgx = new Regex(@"^[a-zA-Z]*$");
 
 			static private string letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			static alfabeto() { }
 
-			static public string primeira(bool maiuscula = true)
+			static public string Primeira(bool maiuscula = true)
 			{
 				if (maiuscula)
 				{
@@ -267,7 +308,7 @@ namespace CESHP
 				}
 			}
 
-			static public string proxima(string __letra, bool maiuscula = true)
+			static public string Proxima(string __letra, bool maiuscula = true)
 			{
 				__letra = __letra.ToUpper();
 

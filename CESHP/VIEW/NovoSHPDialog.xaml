@@ -22,10 +22,10 @@
 				</Grid.ColumnDefinitions>
 				<!-- Numero de Hidrantes -->
 				<Label Grid.Row="0" Grid.Column="0" Content="Numero de Hidrantes:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-				<TextBox Grid.Row="0" Grid.Column="1" Margin="5" Text="{Binding Path=numero_hidrantes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N0}" TextWrapping="Wrap" ToolTip="Numero de hidrantes no sistema"/>
+				<TextBox Grid.Row="0" Grid.Column="1" Margin="5" Text="{Binding Path=numeroHidrantes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N0}" TextWrapping="Wrap" ToolTip="Numero de hidrantes no sistema"/>
 				<!-- Altura de piso a piso -->
 				<Label Grid.Row="1" Grid.Column="0" Content="Altura de piso a piso:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-				<TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" Text="{Binding Path=altura_piso_a_piso, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N2, Delay=500}" TextWrapping="Wrap" ToolTip="Altura de piso a piso, em 'm'"/>
+			<TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" Text="{Binding Path=alturaPisoAPiso, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ConverterCulture='pt-BR', StringFormat=N2, Delay=500}" TextWrapping="Wrap" ToolTip="Altura de piso a piso, em 'm'"/>
 			</Grid>
 			<StackPanel Grid.Row="1"
                     Orientation="Horizontal"

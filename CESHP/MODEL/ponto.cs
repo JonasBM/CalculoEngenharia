@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace CESHP.MODEL
 {
@@ -16,22 +17,7 @@ namespace CESHP.MODEL
 	[Serializable]
 	public class ponto : baseModel //, IEquatable<ponto>
 	{
-		public ponto()
-		{
-			Debug.WriteLine("ponto, ponto");
-			tipo = tipos_de_ponto.Ponto;
-		}
-
-		public ponto(string __nome, shp __shpParent, tipos_de_ponto __tipo = tipos_de_ponto.Ponto)
-		{
-			Debug.WriteLine("ponto, ponto(nome,tipo)");
-			shpParent = __shpParent;
-			nome = __nome;
-			tipo = __tipo;
-		}
-
-
-
+		#region DADOS
 		private int _index;
 		[Description("identificação do ponto")]
 		public int index { get { return _index; } set { _index = value; OnPropertyChanged(); } }
@@ -47,28 +33,42 @@ namespace CESHP.MODEL
 		[Description("tipo de ponto (Ponto, Bomba, Hidrante, Esguicho, Redutor_de_Pressao)")]
 		public tipos_de_ponto tipo { get { return _tipo; } set { _tipo = value; OnPropertyChanged(); } }
 
-		private ObservableCollection<trecho> _trecho_comeca;
+		private ObservableCollection<trecho> _trechoComeca;
 		[Description("peças no trecho")]
-		public ObservableCollection<trecho> trecho_comeca
+		public ObservableCollection<trecho> trechoComeca
 		{
 			get
 			{
-				if (_trecho_comeca == null)
-				{
-					_trecho_comeca = new ObservableCollection<trecho>();
-				}
-				return _trecho_comeca;
+				if (_trechoComeca == null) { _trechoComeca = new ObservableCollection<trecho>(); }
+				return _trechoComeca;
 			}
 			set
 			{
-				_trecho_comeca = value;
+				_trechoComeca = value;
 				OnPropertyChanged();
 			}
 		}
 
-		private trecho _trecho_termina;
+		private trecho _trechoTermina;
 		[Description("peças no trecho")]
-		public trecho trecho_termina { get { return _trecho_termina; } set { _trecho_termina = value; OnPropertyChanged(); } }
+		public trecho trechoTermina { get { return _trechoTermina; } set { _trechoTermina = value; OnPropertyChanged(); } }
+
+		public bool isLast
+		{
+			get
+			{
+				if (tipo == tipos_de_ponto.Hidrante)
+				{
+					if (this == shpParent.pontosHidrantesOnly.LastOrDefault()) { return true; }
+				}
+				else
+				{
+					if (this == shpParent.pontosPontosOnly.LastOrDefault()) { return true; }
+				}
+				return false;
+			}
+		}
+		public bool hasTrechoTermina { get { if (trechoTermina == null) { return false; } else { return true; } } }
 
 		private float _pressao;
 		[Description("pressão no ponto")]
@@ -79,47 +79,150 @@ namespace CESHP.MODEL
 		[ObsoleteAttribute("Não implementado.", true)]
 		public float cota { get { return _cota; } set { _cota = value; OnPropertyChanged(); } }
 
-		private float _vazao_criada;
+		private float _vazaoCriada;
 		[Description("vazão de saída no ponto")]
-		public float vazao_criada { get { return _vazao_criada; } set { _vazao_criada = value; OnPropertyChanged(); } }
+		public float vazaoCriada { get { return _vazaoCriada; } set { _vazaoCriada = value; OnPropertyChanged(); } }
 
-		private float _vazao_acumulada;
+		private float _vazaoAcumulada;
 		[Description("vazão acumulada no ponto")]
-		public float vazao_acumulada { get { return _vazao_acumulada; } set { _vazao_acumulada = value; OnPropertyChanged(); } }
+		public float vazaoAcumulada { get { return _vazaoAcumulada; } set { _vazaoAcumulada = value; OnPropertyChanged(); } }
 
-		private float _perda_de_pressao;
+		private float _perdaDePressao;
 		[Description("perda de pressão no ponto")]
-		public float perda_de_pressao { get { return _perda_de_pressao; } set { _perda_de_pressao = value; OnPropertyChanged(); } }
+		public float perdaDePressao { get { return _perdaDePressao; } set { _perdaDePressao = value; OnPropertyChanged(); } }
+		#endregion
 
-		public static ponto novo(shp __shpParent, tipos_de_ponto __tipo = tipos_de_ponto.Ponto)
+		public ponto(string __nome, shp __shpParent, tipos_de_ponto __tipo = tipos_de_ponto.Ponto)
 		{
-			Debug.WriteLine("ponto, novo");
-			ponto ultimoPonto = __shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).LastOrDefault();
-			//string letra = Regex.Replace(ultimoHidrante.nome, @"[^0-9]", "");
-			//int numero = int.Parse(stringNumero);
-			data.alfabeto.proxima(ultimoPonto.nome);
-			return new ponto(data.alfabeto.proxima(ultimoPonto.nome), __shpParent, __tipo);
+			Debug.WriteLine("ponto, ponto(nome,tipo)");
+			shpParent = __shpParent;
+			nome = __nome;
+			tipo = __tipo;
+			shpParent.pontos.Add(this);
+			index = shpParent.pontos.IndexOf(this);
+			shpParent.Refresh();
 		}
-
-		//private ponto _proximo;
-		//public ponto proximo { get { return _proximo; } set { _proximo = value; OnPropertyChanged(); } }
-
-
-		public ponto proximo()
+		public static ponto Novo(shp __shpParent, tipos_de_ponto __tipo = tipos_de_ponto.Ponto)
 		{
+			Debug.WriteLine("ponto, Novo");
+			if (__tipo == tipos_de_ponto.Ponto)
+			{
 
-			return null;
+				ponto ultimoPonto = __shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).LastOrDefault();
+				if (ultimoPonto == null)
+				{
+					return __shpParent.PrimeiroPonto();
+				}
+				else
+				{
+					data.alfabeto.Proxima(ultimoPonto.nome);
+					return new ponto(data.alfabeto.Proxima(ultimoPonto.nome), __shpParent, __tipo);
+				}
+			}
+			else if (__tipo == tipos_de_ponto.Hidrante)
+			{
+				hidrante ultimoHidrante = __shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante).LastOrDefault() as hidrante;
+				if (ultimoHidrante == null)
+				{
+					return __shpParent.PrimeiroHidrante();
+				}
+				else
+				{
+					string stringNumero = Regex.Replace(ultimoHidrante.nome, @"[^0-9]", "");
+					int numero = int.Parse(stringNumero);
+					return new hidrante(shp.letraHidrante + (numero + 1), __shpParent);
+				}
+			}
+			else
+			{
+				Debug.WriteLine("ponto, novo, PROBLEMA NULL");
+				return null;
+			}
 		}
-
-		public ponto anterior()
+		public ponto Proximo(bool __force = true)
 		{
-
-			return null;
+			Debug.WriteLine("ponto, Proximo");
+			if (tipo == tipos_de_ponto.Ponto)
+			{
+				ponto pontoPosterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Ponto && shpParent.pontos.IndexOf(p) > shpParent.pontos.IndexOf(this)).FirstOrDefault();
+				if (pontoPosterior == null) { pontoPosterior = Novo(shpParent, tipo); }
+				return pontoPosterior;
+			}
+			else if (tipo == tipos_de_ponto.Hidrante)
+			{
+				ponto pontoPosterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && shpParent.pontos.IndexOf(p) > shpParent.pontos.IndexOf(this)).FirstOrDefault();
+				if (pontoPosterior == null) { pontoPosterior = Novo(shpParent, tipo); }
+				return pontoPosterior;
+			}
+			else if (tipo == tipos_de_ponto.Reservatorio)
+			{
+				ponto pontoPosterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).FirstOrDefault();
+				if (pontoPosterior == null) { pontoPosterior = Novo(shpParent, tipos_de_ponto.Ponto); }
+				return pontoPosterior;
+			}
+			else
+			{
+				Debug.WriteLine("ponto, proximo, PROBLEMA NULL");
+				return null;
+			}
 		}
+		public ponto ProximoHidrante(bool __force = true)
+		{
+			Debug.WriteLine("ponto, ProximoHidrante");
 
+			ponto pontoPosterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && shpParent.pontos.IndexOf(p) > shpParent.pontos.IndexOf(this)).FirstOrDefault();
+			if (pontoPosterior == null) { pontoPosterior = Novo(shpParent, tipos_de_ponto.Hidrante); }
+			return pontoPosterior;
+		}
+		public ponto ProximoSemUso()
+		{
+			Debug.WriteLine("ponto, ProximoSemUso");
+			if (tipo == tipos_de_ponto.Ponto)
+			{
+				ponto pontoPosterior = shpParent.pontos.Where(p => !p.hasTrechoTermina && p.tipo == tipos_de_ponto.Ponto && shpParent.pontos.IndexOf(p) > shpParent.pontos.IndexOf(this)).FirstOrDefault();
+				if (pontoPosterior == null) { pontoPosterior = Novo(shpParent, tipo); }
+				return pontoPosterior;
+			}
+			else if (tipo == tipos_de_ponto.Hidrante)
+			{
+				ponto pontoPosterior = shpParent.pontos.Where(p => !p.hasTrechoTermina && p.tipo == tipos_de_ponto.Hidrante && shpParent.pontos.IndexOf(p) > shpParent.pontos.IndexOf(this)).FirstOrDefault();
+				if (pontoPosterior == null) { pontoPosterior = Novo(shpParent, tipo); }
+				return pontoPosterior;
+			}
+			else if (tipo == tipos_de_ponto.Reservatorio)
+			{
+				ponto pontoPosterior = shpParent.pontos.Where(p => !p.hasTrechoTermina && p.tipo == tipos_de_ponto.Ponto).FirstOrDefault();
+				if (pontoPosterior == null) { pontoPosterior = Novo(shpParent, tipo); }
+				return pontoPosterior;
+			}
+			else
+			{
+				Debug.WriteLine("ponto, ProximoSemUso, PROBLEMA NULL");
+				return null;
+			}
+		}
+		public ponto Anterior(bool __force = true)
+		{
+			Debug.WriteLine("ponto, Anterior");
+			if (tipo == tipos_de_ponto.Ponto)
+			{
+				ponto pontoAnterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Ponto && shpParent.pontos.IndexOf(p) < shpParent.pontos.IndexOf(this)).LastOrDefault();
+				if (pontoAnterior == null) { pontoAnterior = shpParent.PrimeiroReservatorio(); }
+				return pontoAnterior;
+			}
+			else if (tipo == tipos_de_ponto.Hidrante)
+			{
+				ponto pontoAnterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && shpParent.pontos.IndexOf(p) < shpParent.pontos.IndexOf(this)).LastOrDefault();
+				if (pontoAnterior == null) { pontoAnterior = shpParent.PrimeiroHidrante(); }
+				return pontoAnterior;
+			}
+			else
+			{
+				Debug.WriteLine("ponto, anterior, PROBLEMA NULL");
+				return null;
+			}
+		}
 	}
-
-	
 
 	[Serializable]
 	public class nulo : ponto
@@ -137,30 +240,7 @@ namespace CESHP.MODEL
 	public class hidrante : ponto
 	{
 		public hidrante(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Hidrante) { Debug.WriteLine("hidrante, hidrante"); }
-		public hidrante proximo(bool __novo = true)
-		{
-			Debug.WriteLine("hidrante, proximo");
-			string stringNumero = Regex.Replace(nome, @"[^0-9]", "");
-			int numero = int.Parse(stringNumero);
-			hidrante proximoHidrante = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && p.nome == shp.letraHidrante + (numero + 1)).FirstOrDefault() as hidrante;
-			if (__novo && proximoHidrante == null)
-			{
-				return novo(shpParent);
-			}
-			else
-			{
-				return proximoHidrante;
-			}
-		}
-		public static hidrante novo(shp __shpParent)
-		{
-			Debug.WriteLine("hidrante, novo");
-			hidrante ultimoHidrante = __shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante).LastOrDefault() as hidrante;
-			string stringNumero = Regex.Replace(ultimoHidrante.nome, @"[^0-9]", "");
-			int numero = int.Parse(stringNumero);
-			return new hidrante(shp.letraHidrante + (numero + 1), __shpParent);
-		}
-		public int numero()
+		public int Numero()
 		{
 			string stringNumero = Regex.Replace(nome, @"[^0-9]", "");
 			return int.Parse(stringNumero);
@@ -185,11 +265,9 @@ namespace CESHP.MODEL
 		public reservatorio(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Reservatorio)
 		{
 			Debug.WriteLine("reservatorio, reservatorio");
-			index = 0;
 			pressao = 0;
-			vazao_criada = 0;
-			vazao_acumulada = 0;
-
+			vazaoCriada = 0;
+			vazaoAcumulada = 0;
 		}
 	}
 }

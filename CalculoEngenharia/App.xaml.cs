@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -20,7 +22,13 @@ namespace CalculoEngenharia
 			base.OnStartup(e);
 			VIEW.MainWindow window = new VIEW.MainWindow();
 			VIEWMODEL.InicioVM InicioVM = new VIEWMODEL.InicioVM();
-			window.DataContext = new VIEWMODEL.InicioVM();
+			string fileName = null;
+			if (e.Args.Count() > 0)
+			{
+				Debug.WriteLine(e.Args[0]);
+				fileName = e.Args[0];
+			}
+			InicioVM.Start(fileName);
 			window.Show();
 		}
 	}

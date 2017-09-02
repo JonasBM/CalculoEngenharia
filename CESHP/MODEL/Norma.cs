@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CESHP.MODEL
 {
 	
-	public class Norma : baseModel
+	public class Norma : CEBiblioteca.baseModel
 	{
 
 		private string _nome;
@@ -36,11 +36,11 @@ namespace CESHP.MODEL
 
 		public Norma(string __nome)
 		{
-			Debug.WriteLine("Norma, Norma");
+			DebugAlert();
 			nome = __nome;
 		}
 
-		public class Risco : baseModel
+		public class Risco : CEBiblioteca.baseModel
 		{
 			private string _nome;
 			public string nome { get { return _nome; } set { _nome = value; OnPropertyChanged(); } }
@@ -68,7 +68,7 @@ namespace CESHP.MODEL
 
 			public Risco(string __nome, float __vazão, float __pressao, float __requinte, jato __jato, int __mangueira, float __perda_esguicho = 0)
 			{
-				Debug.WriteLine("Risco, Risco");
+				DebugAlert();
 				nome = __nome;
 				vazão = __vazão;
 				pressao = __pressao;

@@ -23,15 +23,11 @@ namespace CESHP.MODEL
 	public enum jato { Regulavel, Solido };
 
 	[Serializable]
-	public class shp : baseModel //, IEquatable<shp>
+	public class shp : CEBiblioteca.baseModel //, IEquatable<shp>
 	{
 		#region ARQUIVO
 		private FileInfo _arquivo;
 		public FileInfo arquivo { get { return _arquivo; } set { _arquivo = value; OnPropertyChanged(); } }
-
-		
-
-
 		#endregion
 
 		#region VISIBILIDADE
@@ -156,7 +152,7 @@ namespace CESHP.MODEL
 
 		public shp()
 		{
-			Debug.WriteLine("shp, shp");
+			DebugAlert();
 			arquivo = null;
 			tipo = classe_de_risco.Leve;
 			pressaoMinima = 4;
@@ -168,8 +164,8 @@ namespace CESHP.MODEL
 		}
 		public shp(int __numeroHidrantes, float __alturaPisoAPiso)
 		{
+			DebugAlert();
 			IsEnabled = false;
-			Debug.WriteLine("shp, shp(numeroHidrantes,alturaPisoAPiso)");
 			arquivo = null;
 			tipo = classe_de_risco.Leve;
 			vazaoMinima = 70;
@@ -196,32 +192,39 @@ namespace CESHP.MODEL
 			}
 			IsEnabled = true;
 		}
-		public void Refresh() { CollectionViewSource.GetDefaultView(trechos).Refresh(); }
+		public void Refresh() {
+			DebugAlert();
+			CollectionViewSource.GetDefaultView(trechos).Refresh();
+		}
 		public reservatorio PrimeiroReservatorio()
 		{
+			DebugAlert();
 			reservatorio pontoReservatorio = pontos.Where(p => p.tipo == tipos_de_ponto.Reservatorio).FirstOrDefault() as reservatorio;
 			if (pontoReservatorio == null) { pontoReservatorio = new reservatorio("Res.", this); }
 			return pontoReservatorio;
 		}
 		public ponto PrimeiroPonto()
 		{
+			DebugAlert();
 			ponto pontoPonto = pontos.Where(p => p.tipo == tipos_de_ponto.Ponto).FirstOrDefault();
 			if (pontoPonto == null) { pontoPonto = new ponto(data.alfabeto.Primeira(), this); }
 			return pontoPonto;
 		}
 		public hidrante PrimeiroHidrante()
 		{
+			DebugAlert();
 			hidrante pontoHidrante = pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante).FirstOrDefault() as hidrante;
 			if (pontoHidrante == null) { pontoHidrante = new hidrante(letraHidrante + "1", this); }
 			return pontoHidrante;
 		}
 		public hidrante PrimeiroHidranteEmUso()
 		{
+			DebugAlert();
 			return pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && p.trechoTermina != null).FirstOrDefault() as hidrante;
 		}
 		public static shp Novo()
 		{
-			Debug.WriteLine("shp, novo");
+			DebugAlert();
 			NovoSHPDialogVM NovoSHPDialog = new NovoSHPDialogVM();
 			NovoSHPDialog.NovoSHP();
 			if (NovoSHPDialog.salvo)
@@ -235,8 +238,9 @@ namespace CESHP.MODEL
 		}
 		public void MoveTrechos(int __oldIndex, int __newIndex)
 		{
+			DebugAlert();
 			trechos.Move(__oldIndex, __newIndex);
-			Debug.WriteLine("oldIndex, newIndex: {0} to {1}", __oldIndex, __newIndex);
+			DebugAlertMessage("oldIndex, newIndex: "+ __oldIndex + " to "+ __newIndex);
 			trechosSelected = trechos[__newIndex];
 			for (int i = 0; i < trechos.Count(); i++)
 			{
@@ -249,9 +253,7 @@ namespace CESHP.MODEL
 		[ObsoleteAttribute("Não funciona.", true)]
 		public void OrganizaHidrantes(trecho __trechoModificado, int __oldIndexStarted)
 		{
-
-			Debug.WriteLine("shp, OrganizaLetras");
-
+			DebugAlert();
 			for (int i = 0; i < trechos.Count(); i++)
 			{
 				if (trechos[i].fim.trechoTermina != null)
@@ -323,7 +325,7 @@ namespace CESHP.MODEL
 		[ObsoleteAttribute("Não funciona.", true)]
 		public void OrganizaLetras(trecho __trechoModificado, int __oldIndexStarted)
 		{
-			Debug.WriteLine("shp, OrganizaLetras");
+			DebugAlert();
 			OrganizaHidrantes(__trechoModificado, __oldIndexStarted);
 			ponto pontoAtual = PrimeiroReservatorio();
 			int trechoAcumulado = 0;
@@ -349,7 +351,7 @@ namespace CESHP.MODEL
 		[ObsoleteAttribute("Não funciona.", true)]
 		public void OrganizaLetrasOBSOLETE(trecho __trechoModificado, int __oldIndexStarted)
 		{
-			Debug.WriteLine("shp, OrganizaLetras");
+			DebugAlert();
 			bool sobe = true;
 			trecho[] entreTrechoOriginal;
 			if (__oldIndexStarted > trechos.IndexOf(__trechoModificado))
@@ -416,7 +418,7 @@ namespace CESHP.MODEL
 		[ObsoleteAttribute("Não funciona.", true)]
 		public void OrganizaTrechos()
 		{
-			Debug.WriteLine("shp, OrganizaTrechos");
+			DebugAlert();
 			return;
 			int index = 0;
 			int newIndex = 0;

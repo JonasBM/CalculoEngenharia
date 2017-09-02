@@ -15,7 +15,7 @@ namespace CESHP.MODEL
 	public enum tipos_de_ponto { Nulo, Ponto, Bomba, Hidrante, Esguicho, Redutor_de_Pressao, Reservatorio };
 
 	[Serializable]
-	public class ponto : baseModel //, IEquatable<ponto>
+	public class ponto : CEBiblioteca.baseModel //, IEquatable<ponto>
 	{
 		#region DADOS
 		private int _index;
@@ -94,7 +94,7 @@ namespace CESHP.MODEL
 
 		public ponto(string __nome, shp __shpParent, tipos_de_ponto __tipo = tipos_de_ponto.Ponto)
 		{
-			Debug.WriteLine("ponto, ponto(nome,tipo)");
+			DebugAlert();
 			shpParent = __shpParent;
 			nome = __nome;
 			tipo = __tipo;
@@ -104,7 +104,7 @@ namespace CESHP.MODEL
 		}
 		public static ponto Novo(shp __shpParent, tipos_de_ponto __tipo = tipos_de_ponto.Ponto)
 		{
-			Debug.WriteLine("ponto, Novo");
+			DebugAlert();
 			if (__tipo == tipos_de_ponto.Ponto)
 			{
 
@@ -135,13 +135,13 @@ namespace CESHP.MODEL
 			}
 			else
 			{
-				Debug.WriteLine("ponto, novo, PROBLEMA NULL");
+				DebugAlertMessage("ponto, novo, PROBLEMA NULL");
 				return null;
 			}
 		}
 		public ponto Proximo(bool __force = true)
 		{
-			Debug.WriteLine("ponto, Proximo");
+			DebugAlert();
 			if (tipo == tipos_de_ponto.Ponto)
 			{
 				ponto pontoPosterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Ponto && shpParent.pontos.IndexOf(p) > shpParent.pontos.IndexOf(this)).FirstOrDefault();
@@ -162,13 +162,13 @@ namespace CESHP.MODEL
 			}
 			else
 			{
-				Debug.WriteLine("ponto, proximo, PROBLEMA NULL");
+				DebugAlertMessage("ponto, proximo, PROBLEMA NULL");
 				return null;
 			}
 		}
 		public ponto ProximoHidrante(bool __force = true)
 		{
-			Debug.WriteLine("ponto, ProximoHidrante");
+			DebugAlert();
 
 			ponto pontoPosterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Hidrante && shpParent.pontos.IndexOf(p) > shpParent.pontos.IndexOf(this)).FirstOrDefault();
 			if (pontoPosterior == null) { pontoPosterior = Novo(shpParent, tipos_de_ponto.Hidrante); }
@@ -176,7 +176,7 @@ namespace CESHP.MODEL
 		}
 		public ponto ProximoSemUso()
 		{
-			Debug.WriteLine("ponto, ProximoSemUso");
+			DebugAlert();
 			if (tipo == tipos_de_ponto.Ponto)
 			{
 				ponto pontoPosterior = shpParent.pontos.Where(p => !p.hasTrechoTermina && p.tipo == tipos_de_ponto.Ponto && shpParent.pontos.IndexOf(p) > shpParent.pontos.IndexOf(this)).FirstOrDefault();
@@ -197,13 +197,13 @@ namespace CESHP.MODEL
 			}
 			else
 			{
-				Debug.WriteLine("ponto, ProximoSemUso, PROBLEMA NULL");
+				DebugAlertMessage("ponto, ProximoSemUso, PROBLEMA NULL");
 				return null;
 			}
 		}
 		public ponto Anterior(bool __force = true)
 		{
-			Debug.WriteLine("ponto, Anterior");
+			DebugAlert();
 			if (tipo == tipos_de_ponto.Ponto)
 			{
 				ponto pontoAnterior = shpParent.pontos.Where(p => p.tipo == tipos_de_ponto.Ponto && shpParent.pontos.IndexOf(p) < shpParent.pontos.IndexOf(this)).LastOrDefault();
@@ -218,7 +218,7 @@ namespace CESHP.MODEL
 			}
 			else
 			{
-				Debug.WriteLine("ponto, anterior, PROBLEMA NULL");
+				DebugAlertMessage("ponto, anterior, PROBLEMA NULL");
 				return null;
 			}
 		}
@@ -227,19 +227,19 @@ namespace CESHP.MODEL
 	[Serializable]
 	public class nulo : ponto
 	{
-		public nulo(shp __shpParent) : base("--", __shpParent, tipos_de_ponto.Nulo) { Debug.WriteLine("nulo, nulo"); }
+		public nulo(shp __shpParent) : base("--", __shpParent, tipos_de_ponto.Nulo) { DebugAlert(); }
 	}
 
 	[Serializable]
 	public class bomba : ponto
 	{
-		public bomba(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Bomba) { Debug.WriteLine("bomba, bomba"); }
+		public bomba(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Bomba) { DebugAlert(); }
 	}
 
 	[Serializable]
 	public class hidrante : ponto
 	{
-		public hidrante(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Hidrante) { Debug.WriteLine("hidrante, hidrante"); }
+		public hidrante(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Hidrante) { DebugAlert(); }
 		public int Numero()
 		{
 			string stringNumero = Regex.Replace(nome, @"[^0-9]", "");
@@ -250,13 +250,13 @@ namespace CESHP.MODEL
 	[Serializable]
 	public class esguicho : ponto
 	{
-		public esguicho(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Esguicho) { Debug.WriteLine("esguicho, esguicho"); }
+		public esguicho(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Esguicho) { DebugAlert(); }
 	}
 
 	[Serializable]
 	public class redutor : ponto
 	{
-		public redutor(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Redutor_de_Pressao) { Debug.WriteLine("redutor, redutor"); }
+		public redutor(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Redutor_de_Pressao) { DebugAlert(); }
 	}
 
 	[Serializable]
@@ -264,7 +264,7 @@ namespace CESHP.MODEL
 	{
 		public reservatorio(string __nome, shp __shpParent) : base(__nome, __shpParent, tipos_de_ponto.Reservatorio)
 		{
-			Debug.WriteLine("reservatorio, reservatorio");
+			DebugAlert();
 			pressao = 0;
 			vazaoCriada = 0;
 			vazaoAcumulada = 0;

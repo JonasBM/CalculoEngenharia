@@ -13,7 +13,7 @@ using System.Windows.Media;
 namespace CESHP.MODEL
 {
 	[Serializable]
-	public class trecho : baseModel //, IEquatable<trecho>
+	public class trecho : CEBiblioteca.baseModel //, IEquatable<trecho>
 	{
 		#region VISIBILIDADE
 		public Visibility showHidrante
@@ -107,15 +107,6 @@ namespace CESHP.MODEL
 					OnPropertyChanged("showNotHidrante");
 				}
 			}
-		}
-		public void SetFimSemCadeia(ponto __fim, trecho __trechoTermina)
-		{
-			_fim = __fim;
-			if (_fim != null) { _fim.trechoTermina = __trechoTermina; }
-			OnPropertyChanged("fim");
-			OnPropertyChanged("isHidrante");
-			OnPropertyChanged("showHidrante");
-			OnPropertyChanged("showNotHidrante");
 		}
 
 		private int _diametroIndex;
@@ -226,7 +217,7 @@ namespace CESHP.MODEL
 		#endregion
 		public trecho(ponto __inicio, ponto __fim, float __comprimento, float __desnivel, shp __shpParent)
 		{
-			Debug.WriteLine("trecho, trecho");
+			DebugAlert();
 			shpParent = __shpParent;
 			inicio = __inicio;
 			fim = __fim;
@@ -242,9 +233,19 @@ namespace CESHP.MODEL
 			index = shpParent.trechos.IndexOf(this);
 			shpParent.Refresh();
 		}
+		public void SetFimSemCadeia(ponto __fim, trecho __trechoTermina)
+		{
+			DebugAlert();
+			_fim = __fim;
+			if (_fim != null) { _fim.trechoTermina = __trechoTermina; }
+			OnPropertyChanged("fim");
+			OnPropertyChanged("isHidrante");
+			OnPropertyChanged("showHidrante");
+			OnPropertyChanged("showNotHidrante");
+		}
 		public ponto PontoAnterior()
 		{
-			Debug.WriteLine("trecho, PontoAnterior");
+			DebugAlert();
 			trecho trechoAnterior = shpParent.trechos.Where(t => !t.isHidrante && shpParent.trechos.IndexOf(t) < shpParent.trechos.IndexOf(this)).LastOrDefault();
 			if (trechoAnterior == null)
 			{
@@ -257,7 +258,7 @@ namespace CESHP.MODEL
 		}
 		public ponto PontoPosterior(bool __semUSo = false)
 		{
-			Debug.WriteLine("trecho, PontoPosterior");
+			DebugAlert();
 			trecho trechoPosterior = shpParent.trechos.Where(t => !t.isHidrante && shpParent.trechos.IndexOf(t) > shpParent.trechos.IndexOf(this)).FirstOrDefault();
 			if (trechoPosterior == null)
 			{
@@ -277,7 +278,7 @@ namespace CESHP.MODEL
 		}
 		public hidrante HidranteAnterior()
 		{
-			Debug.WriteLine("trecho, HidranteAnterior");
+			DebugAlert();
 			trecho trechoHidranteAnterior = shpParent.trechos.Where(t => t.isHidrante && shpParent.trechos.IndexOf(t) < shpParent.trechos.IndexOf(this)).LastOrDefault();
 			if (trechoHidranteAnterior == null)
 			{
@@ -290,7 +291,7 @@ namespace CESHP.MODEL
 		}
 		public hidrante HidrantePosterior()
 		{
-			Debug.WriteLine("trecho, HidrantePosterior");
+			DebugAlert();
 			trecho trechoHidrantePosterior = shpParent.trechos.Where(t => t.isHidrante && shpParent.trechos.IndexOf(t) > shpParent.trechos.IndexOf(this)).FirstOrDefault();
 			if (trechoHidrantePosterior == null)
 			{
@@ -303,7 +304,7 @@ namespace CESHP.MODEL
 		}
 		public hidrante HidranteAtual(bool __semUSo = false)
 		{
-			Debug.WriteLine("trecho, HidranteAtual");
+			DebugAlert();
 			hidrante pontoHidrante = HidranteAnterior();
 			if (pontoHidrante == null)
 			{

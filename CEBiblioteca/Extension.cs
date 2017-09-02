@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,58 @@ namespace CEBiblioteca
 			}
 		}
 
+		public static string GetNovoArquivoFileName(ExtensionType __Extension, bool message = false)
+		{
+			switch (__Extension)
+			{
+				case ExtensionType.SHP:
+					return "novo:?|novo" + GetExtension (__Extension) + GetExtension(__Extension);
+				case ExtensionType.IGC:
+					return "novo:?|novo" + GetExtension(__Extension) + GetExtension(__Extension);
+				case ExtensionType.CIE:
+					return "novo:?|novo" + GetExtension(__Extension) + GetExtension(__Extension);
+				default:
+					if (message) { Message.Alerta.ExtensaoInvalida(); }
+					return null;
+			}
+		}
 
+		public static ExtensionType IsNovoArquivoFileName(string __fileName, bool message = false)
+		{
+
+			if (__fileName == GetNovoArquivoFileName(ExtensionType.SHP, false))
+			{
+				return ExtensionType.SHP;
+			}
+			else if (__fileName == GetNovoArquivoFileName(ExtensionType.IGC, false))
+			{
+				return ExtensionType.SHP;
+			}
+			else if (__fileName == GetNovoArquivoFileName(ExtensionType.CIE, false))
+			{
+				return ExtensionType.SHP;
+			}
+			else
+			{
+				if (message) { Message.Alerta.ExtensaoInvalida(); }
+				return ExtensionType.None;
+			}
+		}
+
+		public static bool IsFileNameValid(string __fileName, bool message = false)
+		{
+			try
+			{
+				FileInfo fileInfo = new FileInfo(__fileName);
+			}
+			catch (Exception e)
+			{
+				
+				Debug.WriteLine(e.Message);
+			}
+			finally { }
+
+			return false;
+		}
 	}
 }

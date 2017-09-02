@@ -73,13 +73,13 @@ namespace CESHP.VIEWMODEL
 		#region EditarPecas
 		public void EditarPecas(trecho __trecho)
 		{
+			DebugAlert();
 			trecho = __trecho;
 			pecas = new ObservableCollection<peca>();
 			for (int i = 0; i < trecho.pecasIndexes.Count; i++)
 			{
 				pecas.Add(new peca(trecho.material.pecas[trecho.pecasIndexes[i]].index, trecho.material.pecas[trecho.pecasIndexes[i]].nome));
 			}
-			Debug.WriteLine("EditarPecasDialogVM, EditarPecas");
 			salvo = false;
 			window = new Window
 			{
@@ -118,7 +118,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void AdicionarPeca(peca __peca)
 		{
-			Debug.WriteLine("EditarPecasDialogVM, AdicionarPeca");
+			DebugAlert();
 			pecas.Add(new peca(__peca.index, __peca.nome));
 		}
 		public bool canAdicionarPeca(peca __peca)
@@ -145,7 +145,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void RemoverPeca(peca __peca)
 		{
-			Debug.WriteLine("EditarPecasDialogVM, RemoverPeca");
+			DebugAlert();
 			pecas.Remove(__peca);
 		}
 		public bool canRemoverPeca(peca __peca)
@@ -172,7 +172,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void Salva()
 		{
-			Debug.WriteLine("EditarPecasDialogVM, Salva");
+			DebugAlert();
 			window.DialogResult = true;
 			window.Close();
 		}
@@ -200,7 +200,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void Cancela()
 		{
-			Debug.WriteLine("EditarPecasDialogVM, Cancela");
+			DebugAlert();
 			window.DialogResult = false;
 			window.Close();
 		}
@@ -213,7 +213,6 @@ namespace CESHP.VIEWMODEL
 		#region DragNDrop
 		void IDropTarget.DragOver(IDropInfo dropInfo)
 		{
-			//Debug.WriteLine("EditarPecasDialogVM, DragOver");
 			if (dropInfo.Data != null && dropInfo.TargetItem != null && dropInfo.Data is peca && dropInfo.TargetItem is peca)
 			{
 
@@ -224,7 +223,6 @@ namespace CESHP.VIEWMODEL
 				peca targetItem = dropInfo.TargetItem as peca;
 				int oldIndex = pecas.IndexOf(sourceItem);
 				int newIndex = pecas.IndexOf(targetItem);
-				//Debug.WriteLine("oldIndex, newIndex: {0} to {1}", oldIndex, newIndex);
 				if (oldIndex != newIndex)
 				{
 					pecas.Move(oldIndex, newIndex);
@@ -234,7 +232,7 @@ namespace CESHP.VIEWMODEL
 		}
 		void IDropTarget.Drop(IDropInfo dropInfo)
 		{
-			Debug.WriteLine("EditarPecasDialogVM, Drop");
+			DebugAlert();
 		}
 		#endregion
 	}

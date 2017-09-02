@@ -115,7 +115,7 @@ namespace CESHP.VIEWMODEL
 		#region AdicionarTrecho
 		public trecho AdicionarTrecho(shp __shp)
 		{
-			Debug.WriteLine("AdicionarTrechoDialogVM, AdicionarTrecho");
+			DebugAlert();
 			shp = new shp();
 			//shp.IsEnabled = false;
 			shp.pontos = new ObservableCollection<ponto>();
@@ -167,7 +167,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void Salva()
 		{
-			Debug.WriteLine("AdicionarTrechoDialogVM, Salva");
+			DebugAlert();
 			window.DialogResult = true;
 			window.Close();
 		}
@@ -191,7 +191,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void Cancela()
 		{
-			Debug.WriteLine("AdicionarTrechoDialogVM, Cancela");
+			DebugAlert();
 			window.DialogResult = false;
 			window.Close();
 		}

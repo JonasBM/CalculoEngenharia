@@ -32,7 +32,7 @@ namespace CESHP.VIEWMODEL
 		#region NovoSHP
 		public void NovoSHP()
 		{
-			Debug.WriteLine("NovoSHPDialogVM, NovoSHP");
+			DebugAlert();
 			numeroHidrantes = 7;
 			alturaPisoAPiso = (float)2.88;
 			salvo = false;
@@ -74,7 +74,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void Salva()
 		{
-			Debug.WriteLine("NovoSHPDialogVM, Salva");
+			DebugAlert();
 			window.DialogResult = true;
 			window.Close();
 		}
@@ -104,7 +104,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void Cancela()
 		{
-			Debug.WriteLine("NovoSHPDialogVM, Cancela");
+			DebugAlert();
 			window.DialogResult = false;
 			window.Close();
 		}

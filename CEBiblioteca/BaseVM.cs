@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace CEBiblioteca
 {
-	public abstract class BaseVM : INotifyPropertyChanged, IDisposable
+	public abstract class BaseVM : baseModel, INotifyPropertyChanged, IDisposable
 	{
 		private bool _ativo;
 		public bool ativo { get { return _ativo; } set { _ativo = value; OnPropertyChanged(); } }
@@ -50,11 +50,7 @@ namespace CEBiblioteca
 			}
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
-		public void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
+		
 		public void Dispose()
 		{
 			OnDispose();

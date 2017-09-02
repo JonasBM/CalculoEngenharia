@@ -90,14 +90,8 @@ namespace CESHP.VIEWMODEL
 				}
 			}
 		}
-
-		private shp _old_shp;
-
 		private shp _shp;
-
-
 		public shp shp { get { return _shp; } set { _shp = value; OnPropertyChanged(); Refresh(); } }
-
 		public ObservableCollection<material> materiais
 		{
 			get
@@ -110,7 +104,6 @@ namespace CESHP.VIEWMODEL
 				OnPropertyChanged();
 			}
 		}
-
 		public ObservableCollection<mangueira> mangueiras
 		{
 			get
@@ -138,14 +131,11 @@ namespace CESHP.VIEWMODEL
 		}
 		#endregion
 
-		
-		private CESHPVM()
-		{
-			Debug.WriteLine("CESHPVM, CESHPVM");
-		}
+
+		private CESHPVM() { DebugAlert(); }
 		public static CESHPVM TryCreate(string __fileName = null, bool novaJanela = false)
 		{
-			Debug.WriteLine("CESHPVM, TryCreate");
+			DebugAlert();
 			CESHPVM CESHPVM = new CESHPVM();
 			if (CESHPVM.AbrirArquivoFileName(__fileName, novaJanela))
 			{
@@ -174,7 +164,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void UpdateTitulo()
 		{
-			Debug.WriteLine("CESHPVM, UpdateTitulo");
+			DebugAlert();
 			if (shp != null)
 			{
 				string nome;
@@ -192,7 +182,7 @@ namespace CESHP.VIEWMODEL
 
 		}
 
-		#region NovoArquivoCommand E AbrirArquivoCommand
+		#region NovoArquivoCommand & AbrirArquivoCommand
 		public ICommand NovoArquivoCommand
 		{
 			get
@@ -217,16 +207,8 @@ namespace CESHP.VIEWMODEL
 		}
 		private void AbrirArquivo(bool novo = true)
 		{
-			Debug.WriteLine("CESHPVM, AbrirArquivo");
-			bool novaJanela = true;
-			if (MessageBox.Show("Abrir em Nova Janela?", "Nova Janela", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-			{
-				novaJanela = true;
-			}
-			else
-			{
-				novaJanela = false;
-			}
+			DebugAlert();
+			bool novaJanela = Message.Prompt.NovaJanela();
 			if (novo)
 			{
 				AbrirArquivoFileName(null, novaJanela);
@@ -244,8 +226,8 @@ namespace CESHP.VIEWMODEL
 						AbrirArquivoFileName(openFileDialog1.FileName, novaJanela);
 					}
 				}
-			}
 
+			}
 		}
 		private bool canAbrirArquivo()
 		{
@@ -265,7 +247,6 @@ namespace CESHP.VIEWMODEL
 			{
 				FileInfo fileInfo = new FileInfo(fileName);
 				if (!fileInfo.Exists) { MessageBox.Show("Arquivo inexistente!"); }
-
 				string extension = Path.GetExtension(fileName);
 				if (extension == ".tshp")
 				{
@@ -280,7 +261,7 @@ namespace CESHP.VIEWMODEL
 					catch (Exception e)
 					{
 						MessageBox.Show("Arquivo invalido!");
-						Debug.WriteLine("Arquivo invalido: {0}", e.Message);
+						DebugAlertMessage("Arquivo invalido: "+ e.Message);
 					}
 					finally
 					{
@@ -289,7 +270,7 @@ namespace CESHP.VIEWMODEL
 				}
 				else if (extension == ".tgas")
 				{
-					
+
 				}
 				else if (extension == ".tcaf")
 				{
@@ -302,12 +283,6 @@ namespace CESHP.VIEWMODEL
 			}
 			if (novaJanela)
 			{
-				//abrir novo arquivo em nova janela
-				//path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-				//path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-				//path = Application.ExecutablePath;
-				//var info = new ProcessStartInfo(Application.ExecutablePath);
-				//path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
 				string fullName = "novotshp.tshp";
 				if (_shp != null)
 				{
@@ -325,10 +300,10 @@ namespace CESHP.VIEWMODEL
 				catch (Exception e)
 				{
 					MessageBox.Show("Arquivo invalido!");
-					Debug.WriteLine("Arquivo invalido: {0}", e.Message);
+					DebugAlertMessage("Arquivo invalido: " + e.Message);
 				}
 				finally { }
-				
+
 			}
 			else
 			{
@@ -370,7 +345,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void SalvarArquivo(bool novo = true)
 		{
-			Debug.WriteLine("CESHPVM, SalvarArquivo");
+			DebugAlert();
 			if (shp == null) { MessageBox.Show("Nenhum arquivo aberto!", "Erro"); return; }
 			if (shp.arquivo == null)
 			{
@@ -409,7 +384,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void SalvarArquivoFileName(string nomeArquivo)
 		{
-			Debug.WriteLine("CESHPVM, SalvarArquivoFileName");
+			DebugAlert();
 			if (nomeArquivo == "") { return; }
 			if (Path.GetExtension(nomeArquivo) != ".tshp") { nomeArquivo += ".tshp"; }
 			Stream stream = null;
@@ -427,7 +402,7 @@ namespace CESHP.VIEWMODEL
 			catch (Exception e)
 			{
 				MessageBox.Show("Arquivo invalido!", "Erro");
-				Debug.WriteLine("Arquivo invalido: {0}", e.Message);
+				DebugAlertMessage("Arquivo invalido: " + e.Message);
 			}
 			finally
 			{
@@ -452,7 +427,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void Duplicar()
 		{
-			Debug.WriteLine("CESHPVM, Duplicar");
+			DebugAlert();
 			Console.WriteLine("Duplicar");
 		}
 		private bool canDuplicar()
@@ -476,7 +451,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void Calcular()
 		{
-			Debug.WriteLine("CESHPVM, Calcular");
+			DebugAlert();
 			Console.WriteLine("Calcular");
 		}
 		private bool canCalcular()
@@ -499,7 +474,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void Imprimir()
 		{
-			Debug.WriteLine("CESHPVM, Imprimir");
+			DebugAlert();
 			Console.WriteLine("Imprimir");
 		}
 		private bool canImprimir()
@@ -525,7 +500,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void AdicionarTrecho()
 		{
-			Debug.WriteLine("CESHPVM, AdicionarTrecho");
+			DebugAlert();
 
 			trecho novoTrecho = new trecho(null, null, 0, 0, shp);
 			novoTrecho.inicio = novoTrecho.PontoAnterior();
@@ -577,13 +552,12 @@ namespace CESHP.VIEWMODEL
 		}
 		private void AdicionarPontoOrHidrante(int __indexPontoOrHidranteSelected = 0, bool __pontoOrHidranteEnable = true)
 		{
-			Debug.WriteLine("CESHPVM, AdicionarPontoOrHidrante");
-
+			DebugAlert();
 			AdicionarPontoDialogVM AdicionarPontoDialogVM = new AdicionarPontoDialogVM();
 			AdicionarPontoDialogVM.AdicionarPonto(shp, __indexPontoOrHidranteSelected, __pontoOrHidranteEnable);
 			if (AdicionarPontoDialogVM.salvo)
 			{
-				Console.WriteLine("AdicionarPontoDialogVM.salvoTRUE");
+				DebugAlertMessage(AdicionarPontoDialogVM.salvo.ToString());
 				tipos_de_ponto tipo = tipos_de_ponto.Ponto;
 				if (AdicionarPontoDialogVM.pontoOrHidranteSelected == "Ponto")
 				{
@@ -595,7 +569,7 @@ namespace CESHP.VIEWMODEL
 				}
 				else
 				{
-					Debug.WriteLine("CESHPVM, AdicionarPonto, PROBLEMA");
+					DebugAlertMessage("CESHPVM, AdicionarPonto, PROBLEMA");
 					return;
 				}
 				for (int i = 0; i < AdicionarPontoDialogVM.adicionais; i++)
@@ -605,7 +579,7 @@ namespace CESHP.VIEWMODEL
 			}
 			else
 			{
-				Console.WriteLine("AdicionarPontoDialogVM.salvoFALSE");
+				DebugAlertMessage(AdicionarPontoDialogVM.salvo.ToString());
 			}
 		}
 		private bool canAdicionarPontoOrHidrante()
@@ -629,12 +603,12 @@ namespace CESHP.VIEWMODEL
 		}
 		private void EditarPecas(trecho __trecho)
 		{
-			Debug.WriteLine("CESHPVM, EditarPecas");
+			DebugAlert();
 			EditarPecasDialogVM EditarPecasDialogVM = new EditarPecasDialogVM();
 			EditarPecasDialogVM.EditarPecas(__trecho);
 			if (EditarPecasDialogVM.salvo)
 			{
-				Console.WriteLine("AddPecaDialogVM.salvoTRUE");
+				DebugAlertMessage(EditarPecasDialogVM.salvo.ToString());
 				__trecho.pecasIndexes = new ObservableCollection<int>();
 				for (int i = 0; i < EditarPecasDialogVM.pecas.Count; i++)
 				{
@@ -644,7 +618,7 @@ namespace CESHP.VIEWMODEL
 			}
 			else
 			{
-				Console.WriteLine("AddPecaDialogVM.salvoFALSE");
+				DebugAlertMessage(EditarPecasDialogVM.salvo.ToString());
 			}
 		}
 		private bool canEditarPecas(trecho __trecho)
@@ -671,7 +645,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void RemoverTrecho(trecho __trecho)
 		{
-			Debug.WriteLine("CESHPVM, RemoverTrecho");
+			DebugAlert();
 			shp.trechos.Remove(__trecho);
 		}
 		private bool canRemoverTrecho(trecho __trecho)
@@ -696,7 +670,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void Aplicar()
 		{
-			Debug.WriteLine("CESHPVM, Aplicar");
+			DebugAlert();
 			Console.WriteLine("Aplicar");
 		}
 		private bool canAplicar()
@@ -719,7 +693,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void Mudar()
 		{
-			Debug.WriteLine("CESHPVM, Mudar");
+			DebugAlert();
 			Console.WriteLine("Mudar");
 		}
 		private bool canMudar()
@@ -743,7 +717,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void Reset()
 		{
-			Debug.WriteLine("CESHPVM, Reset");
+			DebugAlert();
 			Console.WriteLine("Reset");
 		}
 		private bool canReset()
@@ -767,7 +741,7 @@ namespace CESHP.VIEWMODEL
 		}
 		private void Organizar()
 		{
-			Debug.WriteLine("CESHPVM, Organizar");
+			DebugAlert();
 			Console.WriteLine("Organizar");
 		}
 		private bool canOrganizar()
@@ -778,20 +752,17 @@ namespace CESHP.VIEWMODEL
 		//fazer
 
 		#region DragNDrop
-
 		public void DragOver(IDropInfo dropInfo)
 		{
-			//Debug.WriteLine("CESHPVM, DragOver");
 			if (dropInfo.Data != null && dropInfo.TargetItem != null && dropInfo.Data is trecho && dropInfo.TargetItem is trecho)
 			{
 				dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
 				dropInfo.Effects = DragDropEffects.Move;
-
 			}
 		}
 		public void Drop(IDropInfo dropInfo)
 		{
-			Debug.WriteLine("CESHPVM, Drop");
+			DebugAlert();
 			shp.IsEnabled = false;
 			if (dropInfo.Data != null && dropInfo.TargetItem != null && dropInfo.Data is trecho && dropInfo.TargetItem is trecho)
 			{

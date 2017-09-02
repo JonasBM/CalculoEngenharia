@@ -10,21 +10,21 @@ using System.Threading.Tasks;
 namespace CESHP.MODEL
 {
 	[Serializable]
-	public class mangueira : baseModel
+	public class mangueira : CEBiblioteca.baseModel
 	{
 		public mangueira()
 		{
-			Debug.WriteLine("mangueira, mangueira");
+			DebugAlert();
 		}
 		public mangueira(string __nome)
 		{
-			Debug.WriteLine("mangueira, mangueira{0}", __nome);
+			DebugAlert();
 			_nome = __nome;
 		}
 
 		public mangueira(string __nome, string __fabricante, float __crt, diametro __diametro)
 		{
-			Debug.WriteLine("mangueira, mangueira({0},{1},{2},{3})", __nome, __fabricante, __crt, __diametro);
+			DebugAlert();
 			nome = __nome;
 			fabricante = __fabricante;
 			crt = __crt;

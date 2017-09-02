@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 namespace CESHP.MODEL
 {
 	[Serializable]
-	public class material : baseModel
+	public class material : CEBiblioteca.baseModel
 	{
 		public material()
 		{
-			Debug.WriteLine("material, material");
+			DebugAlert();
 		}
 		public material(string __nome)
 		{
-			Debug.WriteLine("material, material(nome)");
+			DebugAlert();
 			_nome = __nome;
 
 		}
@@ -78,15 +78,15 @@ namespace CESHP.MODEL
 		}
 	}
 	[Serializable]
-	public class peca : baseModel
+	public class peca : CEBiblioteca.baseModel
 	{
 		public peca()
 		{
-			Debug.WriteLine("peca, peca");
+			DebugAlert();
 		}
 		public peca(int __index, string __nome)
 		{
-			Debug.WriteLine("peca, peca(index,nome)");
+			DebugAlert();
 			_index = __index;
 			_nome = __nome;
 		}
@@ -119,12 +119,12 @@ namespace CESHP.MODEL
 	}
 
 	[Serializable]
-	public class comprimento_equivalente : baseModel
+	public class comprimento_equivalente : CEBiblioteca.baseModel
 	{
-		public comprimento_equivalente() { Debug.WriteLine("comprimento_equivalente, comprimento_equivalente"); }
+		public comprimento_equivalente() { DebugAlert(); }
 		public comprimento_equivalente(diametro __diametro, float __perda)
 		{
-			Debug.WriteLine("comprimento_equivalente, comprimento_equivalente(diametro,perda)");
+			DebugAlert();
 			_diametro = __diametro;
 			_perda = __perda;
 		}
@@ -139,12 +139,12 @@ namespace CESHP.MODEL
 	}
 
 	[Serializable]
-	public class diametro : baseModel
+	public class diametro : CEBiblioteca.baseModel
 	{
-		public diametro() { Debug.WriteLine("diametro, diametro"); }
+		public diametro() { DebugAlert(); }
 		public diametro(int __index, string __nome, float __diametro_nominal)
 		{
-			Debug.WriteLine("diametro, diametro(index,nome,diametro_nominal");
+			DebugAlert();
 			_index = __index;
 			_nome = __nome;
 			_diametro_nominal = __diametro_nominal;

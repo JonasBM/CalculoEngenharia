@@ -18,7 +18,7 @@ namespace CEBiblioteca
 				MessageBox.Show("Arquivo invalido!");
 				Debug.WriteLine("Arquivo invalido: {0}", e.Message);
 			}
-			public static void FaltaCESHPDLL() { MessageBox.Show("CESHP.dll Não encontrada, ou corrompida!", "Falha no carregamento da DLL", MessageBoxButton.OK,MessageBoxImage.Stop); }
+			public static void FaltaCESHPDLL() { MessageBox.Show("CESHP.dll Não encontrada, ou corrompida!", "Falha no carregamento da DLL", MessageBoxButton.OK, MessageBoxImage.Stop); }
 
 			public static void FaltaCEIGCDLL() { MessageBox.Show("CEIGC.dll Não encontrada, ou corrompida!", "Falha no carregamento da DLL", MessageBoxButton.OK, MessageBoxImage.Stop); }
 
@@ -27,6 +27,22 @@ namespace CEBiblioteca
 
 			//public static void FaltaCECIEDLL() { MessageBox.Show("CECIE.dll Não encontrada," + Environment.NewLine + "ou corrompida!", "Falha no carregamento da DLL"); }
 
+		}
+
+		public class Prompt
+		{
+			public static bool YesOrNo(string titulo, string mensagem)
+			{
+				if (MessageBox.Show(mensagem, titulo, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+				{
+					return true;
+				}
+				return false;
+			}
+			public static bool NovaJanela()
+			{
+				return YesOrNo("Nova Janela", "Abrir em Nova Janela?");
+			}
 		}
 	}
 }

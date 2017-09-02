@@ -67,7 +67,7 @@ namespace CESHP.VIEWMODEL
 		public void AdicionarPonto(shp __shp, int __indexPontoOrHidranteSelected = 0, bool __pontoOrHidranteEnable = true)
 		{
 
-			Debug.WriteLine("AdicionarPontoDialogVM, AdicionarPonto");
+			DebugAlert();
 			shp = __shp;
 			pontoOrHidrante = new ObservableCollection<string>() { "Ponto", "Hidrante" };
 			pontoOrHidranteSelected = pontoOrHidrante[__indexPontoOrHidranteSelected];
@@ -99,7 +99,7 @@ namespace CESHP.VIEWMODEL
 
 		public void explicativoUpdate()
 		{
-			Debug.WriteLine("AdicionarPontoDialogVM, explicativoUpdate");
+			DebugAlert();
 			if (pontoOrHidranteSelected == "Ponto")
 			{
 				int indexLetra = shp.pontosPontosOnly.Count + adicionais - 3;
@@ -116,7 +116,7 @@ namespace CESHP.VIEWMODEL
 			}
 			else
 			{
-				Debug.WriteLine("AdicionarPontoDialogVM, explicativoUpdate, PROBLEMA");
+				DebugAlertMessage("AdicionarPontoDialogVM, explicativoUpdate, PROBLEMA");
 			}
 		}
 
@@ -134,7 +134,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void Salva()
 		{
-			Debug.WriteLine("AdicionarTrechoDialogVM, Salva");
+			DebugAlert();
 			window.DialogResult = true;
 			window.Close();
 		}
@@ -158,7 +158,7 @@ namespace CESHP.VIEWMODEL
 		}
 		public void Cancela()
 		{
-			Debug.WriteLine("AdicionarTrechoDialogVM, Cancela");
+			DebugAlert();
 			window.DialogResult = false;
 			window.Close();
 		}

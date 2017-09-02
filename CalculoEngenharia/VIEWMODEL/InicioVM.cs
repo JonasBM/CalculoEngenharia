@@ -21,44 +21,27 @@ namespace CalculoEngenharia.VIEWMODEL
 		private ICommand _NovoCIECommand;
 		#endregion
 
-		public InicioVM()
+		public InicioVM() { DebugAlert(); }
+		public bool Start(string __fullName)
 		{
-			Debug.WriteLine("InicioVM, InicioVM");
-		}
-		public bool Start(string __fileName)
-		{
-			Debug.WriteLine("InicioVM, Start");
-			if (!string.IsNullOrEmpty(__fileName))
+			DebugAlert();
+			if (!string.IsNullOrEmpty(__fullName))
 			{
-				FileInfo fileInfo = new FileInfo(__fileName);
+				FileInfo fileInfo = new FileInfo(__fullName);
 				if (!fileInfo.Exists)
 				{
-					__fileName = null;
+					__fullName = null;
 					Message.Alerta.ArquivoInexistente();
 				}
 				else
 				{
-					//ExtensionType extension = Extension.GetExtensionType(__fileName, true);
-
-
-
-					/*
-					switch (extension)
+					if (canAbrir())
 					{
-						case ExtensionType.SHP:
-							NovoSHP(__fileName);
+						if (Abrir(__fullName))
+						{
 							return true;
-						case ExtensionType.IGC:
-							NovoICG(__fileName);
-							return true;
-						case ExtensionType.CIE:
-							NovoCIE(__fileName);
-							return true;
-						default:
-							__fileName = null;
-							break;
+						}
 					}
-					*/
 				}
 			}
 			titulo = "Prevenção - Cálculo Engenharia";
@@ -67,85 +50,55 @@ namespace CalculoEngenharia.VIEWMODEL
 			conteudo.DataContext = this;
 			return false;
 		}
-
-		#region NovoSHPCommand
+		#region NovoSHPCommand & NovoICGCommand & NovoCIECommand
 		public ICommand NovoSHPCommand
 		{
 			get
 			{
 				if (_NovoSHPCommand == null)
 				{
-					_NovoSHPCommand = new RelayCommand(p => NovoSHP(), p => canNovoSHP());
+					_NovoSHPCommand = new RelayCommand(p => Abrir(Extension.GetNovoArquivoFileName(ExtensionType.SHP)), p => canAbrir());
 				}
 				return _NovoSHPCommand;
 			}
 		}
-		private void NovoSHP(string __fileName = null)
-		{
-			Debug.WriteLine("InicioVM, NovoSHP");
-
-
-
-			
-
-
-			
-		}
-		private bool canNovoSHP()
-		{
-			return true;
-		}
-		#endregion
-
-		#region NovoICGCommand
 		public ICommand NovoICGCommand
 		{
 			get
 			{
 				if (_NovoICGCommand == null)
 				{
-					_NovoICGCommand = new RelayCommand(p => NovoICG(), p => canNovoICG());
+					_NovoICGCommand = new RelayCommand(p => Abrir(Extension.GetNovoArquivoFileName(ExtensionType.SHP)), p => canAbrir());
 				}
 				return _NovoICGCommand;
 			}
 		}
-		private void NovoICG(string __fileName = null)
-		{
-			Debug.WriteLine("InicioVM, NovoICG");
-			Console.WriteLine("NovoICG");
-			MessageBox.Show("NovoICG");
-			MessageBox.Show(__fileName);
-		}
-		private bool canNovoICG()
-		{
-			return true;
-		}
-		#endregion
-
-		#region NovoCIECommand
 		public ICommand NovoCIECommand
 		{
 			get
 			{
 				if (_NovoCIECommand == null)
 				{
-					_NovoCIECommand = new RelayCommand(p => NovoCIE(), p => canNovoCIE());
+					_NovoCIECommand = new RelayCommand(p => Abrir(Extension.GetNovoArquivoFileName(ExtensionType.SHP)), p => canAbrir());
 				}
 				return _NovoCIECommand;
 			}
 		}
-		private void NovoCIE(string __fileName = null)
+		private bool Abrir(string __fileName = null)
 		{
-			Debug.WriteLine("InicioVM, NovoCIE");
-			Console.WriteLine("NovoCIE");
-			MessageBox.Show("NovoCIE");
-			MessageBox.Show(__fileName);
+			DebugAlert();
+			object returnObject = Processo.Abrir(__fileName);
+			if (returnObject != null)
+			{
+				Application.Current.MainWindow.DataContext = returnObject;
+				return true;
+			}
+			return false;
 		}
-		private bool canNovoCIE()
+		private bool canAbrir()
 		{
 			return true;
 		}
 		#endregion
-
 	}
 }

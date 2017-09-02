@@ -22,13 +22,13 @@ namespace CalculoEngenharia
 			base.OnStartup(e);
 			VIEW.MainWindow window = new VIEW.MainWindow();
 			VIEWMODEL.InicioVM InicioVM = new VIEWMODEL.InicioVM();
-			string fileName = null;
+			string fullName = null;
 			if (e.Args.Count() > 0)
 			{
 				Debug.WriteLine(e.Args[0]);
-				fileName = e.Args[0];
+				fullName = e.Args[0];
 			}
-			InicioVM.Start(fileName);
+			InicioVM.Start(fullName);
 			window.Show();
 		}
 	}

@@ -31,46 +31,56 @@ namespace CEBiblioteca
 		}
 
 
-		public static object Abrir(string __fileName = null)
+		public static object Abrir(string __fullName = null)
 		{
 			string pathDLL = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
 			string type = null;
 			string staticMethod = "TryCreate";
-			if (!string.IsNullOrEmpty(__fileName))
+			ExtensionType extension = ExtensionType.None;
+
+			if (!string.IsNullOrEmpty(__fullName))
 			{
-				FileInfo fileInfo = new FileInfo(__fileName);
-				if (fileInfo != null)
+				ExtensionType novoArquivoExtensionType = Extension.IsNovoArquivoFileName(__fullName);
+				if (novoArquivoExtensionType != ExtensionType.None)
 				{
-					if (fileInfo.Exists)
+					__fullName = null;
+					extension = novoArquivoExtensionType;
+				}
+				else
+				{
+					FileInfo fileInfo = new FileInfo(__fullName);
+					if (fileInfo != null)
 					{
-						ExtensionType extension = Extension.GetExtensionType(__fileName, true);
-						switch (extension)
+						if (fileInfo.Exists)
 						{
-							case ExtensionType.SHP:
-								pathDLL += "\\CESHP.dll";
-								type = "CESHP.VIEWMODEL.CESHPVM";
-								break;
-							case ExtensionType.IGC:
-								pathDLL += "\\CEIGC.dll";
-								type = "CEIGC.VIEWMODEL.CEIGCVM";
-								break;
-							case ExtensionType.CIE:
-								pathDLL += "\\CECIE.dll";
-								type = "CECIE.VIEWMODEL.CECIEVM";
-								break;
-							default:
-								pathDLL = null;
-								type = null;
-								__fileName = null;
-								break;
+							extension = Extension.GetExtensionType(__fullName, true);
+						}
+						else
+						{
+							__fullName = null;
 						}
 					}
-					else
-					{
-						__fileName = null;
-					}
 				}
-				
+				switch (extension)
+				{
+					case ExtensionType.SHP:
+						pathDLL += "\\CESHP.dll";
+						type = "CESHP.VIEWMODEL.CESHPVM";
+						break;
+					case ExtensionType.IGC:
+						pathDLL += "\\CEIGC.dll";
+						type = "CEIGC.VIEWMODEL.CEIGCVM";
+						break;
+					case ExtensionType.CIE:
+						pathDLL += "\\CECIE.dll";
+						type = "CECIE.VIEWMODEL.CECIEVM";
+						break;
+					default:
+						pathDLL = null;
+						type = null;
+						__fullName = null;
+						break;
+				}
 			}
 			object returnObject = null;
 			try
@@ -79,10 +89,13 @@ namespace CEBiblioteca
 				{
 					Assembly myAssembly = Assembly.LoadFile(pathDLL);
 					Type myType = myAssembly.GetType(type);
-					returnObject = myType.InvokeMember(staticMethod, BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, new object[] { __fileName, false });
-					if (returnObject.GetType() == myType)
+					returnObject = myType.InvokeMember(staticMethod, BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, new object[] { __fullName, false });
+					if (returnObject != null)
 					{
-						return returnObject;
+						if (returnObject.GetType() == myType)
+						{
+							return returnObject;
+						}
 					}
 				}
 			}
